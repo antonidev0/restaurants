@@ -12,14 +12,14 @@ La rotta `/` è un indice che collega le tre landing.
 
 ## Stack
 
-- [Astro](https://astro.build) 6: HTML statico, zero JavaScript inviato al browser.
+- [Astro](https://astro.build) 7: HTML statico, con pochissimo JavaScript solo dove serve.
 - TypeScript in modalità `strict`, controllato con `astro check`.
 - Font self-hosted tramite [Fontsource](https://fontsource.org) (nessuna richiesta a servizi esterni).
 - Nessuna immagine esterna: le illustrazioni sono SVG inline.
 
 ## Comandi
 
-Richiede Node.js 22.12 o superiore.
+Richiede Node.js 22 (vedi `.nvmrc`).
 
 ```sh
 npm install
@@ -27,6 +27,16 @@ npm run dev      # server di sviluppo su http://localhost:4321
 npm run build    # type-check + build statica in dist/
 npm run preview  # anteprima della build
 ```
+
+## Deploy su Vercel
+
+Il progetto è già configurato (`vercel.json`): sito statico, URL senza `.html`, cache lunga per gli asset e header di sicurezza.
+
+1. Su [vercel.com/new](https://vercel.com/new) importa il repository `restaurants`.
+2. Vercel riconosce Astro da solo: lascia i valori proposti e premi **Deploy**.
+3. Ogni push su `main` pubblica in produzione; ogni pull request riceve un'anteprima.
+
+L'URL canonico viene preso dal dominio di produzione di Vercel. Per un dominio personalizzato imposta la variabile d'ambiente `SITE_URL` (es. `https://www.esempio.it`).
 
 ## Architettura
 
@@ -44,7 +54,7 @@ src/
 │   ├── minimalista/
 │   ├── aesthetic/
 │   └── editoriale/
-└── pages/                   # una pagina per rotta, compone i componenti del proprio tema
+└── pages/                   # una pagina per rotta (+ 404), compone i componenti del proprio tema
 ```
 
 Principi seguiti:

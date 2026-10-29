@@ -12,7 +12,9 @@ interface Props {
 }
 
 const { title, description, themeColor, theme } = Astro.props;
-const canonical = new URL(Astro.url.pathname, Astro.site);
+// Con `build.format: 'file'` il percorso termina in .html: lo togliamo per avere URL puliti.
+const cleanPath = Astro.url.pathname.replace(/(index)?\.html$/, '');
+const canonical = new URL(cleanPath, Astro.site);
 ---
 
 <!doctype html>

@@ -1,0 +1,57 @@
+---
+import '@fontsource-variable/inter';
+
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import { landings } from '@/data/landings';
+---
+
+<BaseLayout title="Pagina non trovata" description="La pagina che cerchi non esiste." themeColor="#111111">
+  <main id="contenuto" class="not-found">
+    <p class="code">404</p>
+    <h1>Questo tavolo non esiste.</h1>
+    <p class="text">Ma ne abbiamo tre liberi:</p>
+    <ul role="list">
+      {landings.map((l) => <li><a href={l.href}>{l.style} — {l.name} →</a></li>)}
+    </ul>
+  </main>
+</BaseLayout>
+
+<style>
+  .not-found {
+    display: grid;
+    align-content: center;
+    gap: 1rem;
+    min-height: 100svh;
+    padding: 2rem 1.25rem;
+    background: #111;
+    color: #f4f2ee;
+    font-family: 'Inter Variable', system-ui, sans-serif;
+  }
+
+  .code {
+    font-size: 0.75rem;
+    letter-spacing: 0.14em;
+    opacity: 0.6;
+  }
+
+  h1 {
+    font-size: clamp(2.25rem, 10vw, 4.5rem);
+    font-weight: 600;
+    line-height: 1;
+    letter-spacing: -0.05em;
+  }
+
+  .text {
+    opacity: 0.7;
+  }
+
+  ul {
+    display: grid;
+    gap: 0.5rem;
+  }
+
+  a {
+    text-decoration: none;
+    border-bottom: 1px solid rgb(244 242 238 / 0.25);
+  }
+</style>
