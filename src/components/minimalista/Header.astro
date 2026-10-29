@@ -1,34 +1,84 @@
 ---
 import type { NavLink } from '@/types/restaurant';
+import type { ServiceSlot } from '@/data/minimalista';
+import OpenStatus from './OpenStatus.astro';
 
 interface Props {
   name: string;
   nav: NavLink[];
+  schedule: ServiceSlot[];
+  phone: string;
+  phoneHref: string;
 }
 
-const { name, nav } = Astro.props;
+const { name, nav, schedule, phone, phoneHref } = Astro.props;
 ---
 
 <header class="header">
   <div class="m-wrap inner">
     <a class="logo" href="#contenuto" aria-label={`${name}, torna all'inizio`}>{name}<span aria-hidden="true">.</span></a>
-    <nav aria-label="Navigazione principale">
-      <ul role="list" class="links">
+
+    <nav class="desktop-nav" aria-label="Navigazione principale">
+      <ul role="list">
         {nav.map((link) => <li><a href={link.href}>{link.label}</a></li>)}
       </ul>
     </nav>
-    <a class="cta" href="#prenota">Prenota</a>
+
+    <div class="actions">
+      <a class="cta" href="#prenota">Prenota</a>
+      <button class="toggle" type="button" popovertarget="m-menu" aria-label="Apri il menu">
+        <span></span><span></span>
+      </button>
+    </div>
   </div>
 </header>
+
+<!-- Menu mobile a schermo intero: usa l'API Popover nativa, senza JavaScript. -->
+<div id="m-menu" class="sheet" popover>
+  <div class="m-wrap sheet-inner">
+    <div class="sheet-top">
+      <span class="logo">{name}<span aria-hidden="true">.</span></span>
+      <button class="close" type="button" popovertarget="m-menu" popovertargetaction="hide">Chiudi</button>
+    </div>
+
+    <nav aria-label="Navigazione mobile">
+      <ol role="list" class="sheet-links">
+        {
+          nav.map((link, i) => (
+            <li>
+              <a href={link.href} data-close-menu>
+                <span class="sheet-index">0{i + 1}</span>
+                {link.label}
+              </a>
+            </li>
+          ))
+        }
+      </ol>
+    </nav>
+
+    <div class="sheet-bottom">
+      <OpenStatus schedule={schedule} />
+      <a href={phoneHref}>{phone}</a>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Chiude il popover quando si sceglie una voce, così l'ancora resta visibile.
+  const menu = document.getElementById('m-menu');
+  menu?.querySelectorAll('[data-close-menu]').forEach((link) => {
+    link.addEventListener('click', () => menu.hidePopover?.());
+  });
+</script>
 
 <style>
   .header {
     position: sticky;
     top: 0;
     z-index: 10;
-    background: color-mix(in srgb, var(--m-bg) 88%, transparent);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
+    background: color-mix(in srgb, var(--m-bg) 85%, transparent);
+    backdrop-filter: blur(14px) saturate(1.2);
+    -webkit-backdrop-filter: blur(14px) saturate(1.2);
     border-bottom: 1px solid var(--m-line);
   }
 
@@ -37,13 +87,13 @@ const { name, nav } = Astro.props;
     align-items: center;
     justify-content: space-between;
     gap: 1rem;
-    height: 3.5rem;
+    height: 3.75rem;
   }
 
   .logo {
-    font-size: 1.125rem;
+    font-size: 1.25rem;
     font-weight: 600;
-    letter-spacing: -0.03em;
+    letter-spacing: -0.04em;
     text-decoration: none;
   }
 
@@ -51,42 +101,196 @@ const { name, nav } = Astro.props;
     color: var(--m-accent);
   }
 
-  /* Su mobile la navigazione resta nascosta: la pagina è breve e si legge scorrendo. */
-  .links {
+  .desktop-nav {
     display: none;
   }
 
-  .links a,
-  .cta {
-    font-size: 0.875rem;
-    text-decoration: none;
+  .desktop-nav ul {
+    display: flex;
+    gap: 2.25rem;
   }
 
-  .links a {
+  .desktop-nav a {
+    position: relative;
+    font-size: 0.875rem;
     color: var(--m-muted);
+    text-decoration: none;
     transition: color 0.2s ease;
   }
 
-  .links a:hover {
+  .desktop-nav a::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -0.3rem;
+    height: 1px;
+    background: currentColor;
+    transform: scaleX(0);
+    transform-origin: right;
+    transition: transform 0.3s ease;
+  }
+
+  .desktop-nav a:hover {
     color: var(--m-ink);
   }
 
+  .desktop-nav a:hover::after {
+    transform: scaleX(1);
+    transform-origin: left;
+  }
+
+  .actions {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
   .cta {
-    padding: 0.5rem 0.9rem;
-    border: 1px solid var(--m-ink);
+    display: inline-flex;
+    align-items: center;
+    height: 2.5rem;
+    padding-inline: 1.1rem;
     border-radius: 999px;
-    transition: background 0.2s ease, color 0.2s ease;
+    background: var(--m-ink);
+    color: var(--m-bg);
+    font-size: 0.875rem;
+    font-weight: 500;
+    text-decoration: none;
+    transition: opacity 0.2s ease;
   }
 
   .cta:hover {
+    opacity: 0.8;
+  }
+
+  .toggle {
+    display: grid;
+    place-content: center;
+    gap: 0.35rem;
+    width: 2.5rem;
+    height: 2.5rem;
+    border: 1px solid var(--m-line);
+    border-radius: 50%;
+    background: transparent;
+  }
+
+  .toggle span {
+    display: block;
+    width: 1rem;
+    height: 1px;
+    background: var(--m-ink);
+  }
+
+  /* Pannello a schermo intero */
+  .sheet {
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    max-width: none;
+    max-height: none;
+    margin: 0;
+    padding: 0;
+    border: 0;
     background: var(--m-ink);
     color: var(--m-bg);
+    font-family: var(--m-font);
+    opacity: 0;
+    transform: translateY(-1rem);
+    transition:
+      opacity 0.35s ease,
+      transform 0.35s ease,
+      overlay 0.35s allow-discrete,
+      display 0.35s allow-discrete;
+  }
+
+  .sheet:popover-open {
+    opacity: 1;
+    transform: none;
+  }
+
+  @starting-style {
+    .sheet:popover-open {
+      opacity: 0;
+      transform: translateY(-1rem);
+    }
+  }
+
+  .sheet-inner {
+    display: flex;
+    flex-direction: column;
+    min-height: 100%;
+    padding-block: 0 calc(1.5rem + env(safe-area-inset-bottom));
+  }
+
+  .sheet-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 3.75rem;
+    border-bottom: 1px solid rgb(244 242 238 / 0.15);
+  }
+
+  .close {
+    height: 2.5rem;
+    padding-inline: 1.1rem;
+    border: 1px solid rgb(244 242 238 / 0.3);
+    border-radius: 999px;
+    background: transparent;
+    font-size: 0.875rem;
+  }
+
+  .sheet-links {
+    margin-top: 2rem;
+  }
+
+  .sheet-links a {
+    display: flex;
+    align-items: baseline;
+    gap: 1rem;
+    padding-block: 0.9rem;
+    border-bottom: 1px solid rgb(244 242 238 / 0.15);
+    font-size: clamp(2.25rem, 11vw, 3.5rem);
+    font-weight: 500;
+    letter-spacing: -0.05em;
+    line-height: 1;
+    text-decoration: none;
+  }
+
+  .sheet-index {
+    font-size: 0.75rem;
+    font-weight: 400;
+    letter-spacing: 0;
+    opacity: 0.5;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .sheet-bottom {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-top: auto;
+    padding-top: 2rem;
+    font-size: 0.875rem;
+  }
+
+  .sheet-bottom a {
+    text-decoration: none;
+  }
+
+  .sheet :global(.status) {
+    color: rgb(244 242 238 / 0.7);
   }
 
   @media (min-width: 48rem) {
-    .links {
-      display: flex;
-      gap: 2rem;
+    .desktop-nav {
+      display: block;
+    }
+
+    .toggle {
+      display: none;
     }
   }
 </style>

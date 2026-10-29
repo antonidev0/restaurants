@@ -1,13 +1,15 @@
 ---
 import type { MenuSection } from '@/types/restaurant';
-import { formatPrice } from '@/utils/format';
+import type { MinimalistaContent } from '@/data/minimalista';
+import { formatPrice, pad } from '@/utils/format';
 
 interface Props {
   sections: MenuSection[];
-  tasting: { title: string; courses: number; price: number; note: string };
+  tasting: MinimalistaContent['tasting'];
 }
 
 const { sections, tasting } = Astro.props;
+const tagLabels: Record<string, string> = { V: 'Vegetariano', VG: 'Vegano' };
 ---
 
 <section id="menu" class="menu" aria-labelledby="menu-title">
@@ -15,19 +17,32 @@ const { sections, tasting } = Astro.props;
     <header class="head">
       <h2 id="menu-title" class="m-label">Menu</h2>
       <p class="intro">Alla carta, oppure lasciate fare a noi.</p>
+      <p class="legend">
+        {Object.entries(tagLabels).map(([key, label]) => <span><abbr title={label}>{key}</abbr> {label}</span>)}
+      </p>
     </header>
 
     <div class="sections">
       {
         sections.map((section) => (
-          <div class="section">
-            <h3 class="section-title">{section.title}</h3>
+          <div class="section m-reveal">
+            <h3 class="section-title">
+              <span>{section.title}</span>
+              <span class="count">{pad(section.dishes.length)}</span>
+            </h3>
             <ul role="list">
               {section.dishes.map((dish) => (
                 <li class="dish">
-                  <span class="dish-name">{dish.name}</span>
-                  <span class="dish-price">{formatPrice(dish.price)}</span>
-                  <span class="dish-desc">{dish.description}</span>
+                  <p class="dish-line">
+                    <span class="dish-name">{dish.name}</span>
+                    {dish.tags?.map((tag) => (
+                      <abbr class="tag" title={tagLabels[tag] ?? tag}>
+                        {tag}
+                      </abbr>
+                    ))}
+                    <span class="dish-price">{formatPrice(dish.price)}</span>
+                  </p>
+                  <p class="dish-desc">{dish.description}</p>
                 </li>
               ))}
             </ul>
@@ -35,13 +50,23 @@ const { sections, tasting } = Astro.props;
         ))
       }
 
-      <aside class="tasting" aria-label={tasting.title}>
-        <p class="tasting-top">
-          <span>{tasting.title}</span>
-          <span>{tasting.courses} portate</span>
-        </p>
-        <p class="tasting-price">{formatPrice(tasting.price)}</p>
-        <p class="tasting-note">{tasting.note}</p>
+      <aside class="tasting m-reveal" aria-labelledby="tasting-title">
+        <div class="tasting-top">
+          <h3 id="tasting-title">{tasting.title}</h3>
+          <span>{tasting.courses.length} portate</span>
+        </div>
+
+        <ol role="list" class="courses">
+          {tasting.courses.map((course) => <li>{course}</li>)}
+        </ol>
+
+        <div class="tasting-bottom">
+          <p class="tasting-price">{formatPrice(tasting.price)}</p>
+          <p class="tasting-note">
+            Scelto dalla cucina, per tutto il tavolo.<br />
+            Abbinamento vini {formatPrice(tasting.pairing)}.
+          </p>
+        </div>
       </aside>
     </div>
   </div>
@@ -55,56 +80,95 @@ const { sections, tasting } = Astro.props;
 
   .layout {
     display: grid;
-    gap: 2.5rem;
+    gap: 3rem;
   }
 
   .intro {
     margin-top: 1rem;
-    font-size: 1.5rem;
-    font-weight: 300;
-    letter-spacing: -0.02em;
-    max-width: 18ch;
+    font-size: clamp(2rem, 9vw, 3rem);
+    font-weight: 400;
+    line-height: 1.05;
+    letter-spacing: -0.05em;
+    max-width: 14ch;
+  }
+
+  .legend {
+    display: flex;
+    gap: 1.25rem;
+    margin-top: 1.5rem;
+    font-size: 0.75rem;
+    color: var(--m-muted);
+  }
+
+  abbr {
+    text-decoration: none;
+  }
+
+  .legend abbr {
+    font-weight: 600;
+    color: var(--m-ink);
   }
 
   .sections {
     display: grid;
-    gap: 3rem;
+    gap: 3.5rem;
   }
 
   .section-title {
-    font-size: 0.8125rem;
-    font-weight: 500;
+    display: flex;
+    justify-content: space-between;
     padding-bottom: 0.75rem;
     border-bottom: 1px solid var(--m-ink);
+    font-size: 0.8125rem;
+    font-weight: 500;
+  }
+
+  .count {
+    color: var(--m-muted);
+    font-weight: 400;
+    font-variant-numeric: tabular-nums;
   }
 
   .dish {
-    display: grid;
-    grid-template-columns: 1fr auto;
-    gap: 0.2rem 1rem;
-    padding-block: 1.1rem;
+    padding-block: 1.25rem;
     border-bottom: 1px solid var(--m-line);
   }
 
-  .dish-name {
-    font-size: 1.125rem;
-    font-weight: 500;
-    letter-spacing: -0.02em;
+  .dish-line {
+    display: flex;
+    align-items: baseline;
+    gap: 0.5rem;
   }
 
-  .dish-price {
-    font-variant-numeric: tabular-nums;
+  .dish-name {
+    font-size: 1.25rem;
+    font-weight: 500;
+    letter-spacing: -0.03em;
+  }
+
+  .tag {
+    font-size: 0.625rem;
+    font-weight: 600;
+    letter-spacing: 0.06em;
     color: var(--m-muted);
   }
 
+  .dish-price {
+    margin-left: auto;
+    font-variant-numeric: tabular-nums;
+  }
+
   .dish-desc {
-    grid-column: 1 / -1;
+    margin-top: 0.25rem;
     font-size: 0.875rem;
     color: var(--m-muted);
   }
 
   .tasting {
+    display: grid;
+    gap: 2.5rem;
     padding: 1.75rem;
+    border-radius: 2px;
     background: var(--m-ink);
     color: var(--m-bg);
   }
@@ -115,21 +179,64 @@ const { sections, tasting } = Astro.props;
     font-size: 0.75rem;
     letter-spacing: 0.14em;
     text-transform: uppercase;
-    opacity: 0.7;
+  }
+
+  .tasting-top h3 {
+    font: inherit;
+  }
+
+  .tasting-top span {
+    opacity: 0.6;
+  }
+
+  /* Le portate come una sequenza: ogni voce è legata alla successiva da un filo. */
+  .courses {
+    display: grid;
+    gap: 0.6rem;
+    counter-reset: course;
+  }
+
+  .courses li {
+    counter-increment: course;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-size: 1.125rem;
+    letter-spacing: -0.02em;
+  }
+
+  .courses li::before {
+    content: counter(course, decimal-leading-zero);
+    width: 1.5rem;
+    font-size: 0.6875rem;
+    opacity: 0.5;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .courses li:nth-child(4) {
+    color: var(--m-accent);
+  }
+
+  .tasting-bottom {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: end;
+    justify-content: space-between;
+    gap: 1rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid rgb(244 242 238 / 0.2);
   }
 
   .tasting-price {
-    margin-block: 2.5rem 1rem;
     font-size: 3.5rem;
     font-weight: 300;
-    line-height: 1;
-    letter-spacing: -0.05em;
+    line-height: 0.9;
+    letter-spacing: -0.06em;
   }
 
   .tasting-note {
-    font-size: 0.875rem;
-    opacity: 0.7;
-    max-width: 32ch;
+    font-size: 0.8125rem;
+    opacity: 0.65;
   }
 
   @media (min-width: 48rem) {

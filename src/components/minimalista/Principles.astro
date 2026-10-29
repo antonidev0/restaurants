@@ -10,11 +10,15 @@ const { principles } = Astro.props;
 
 <section id="filosofia" class="principles" aria-labelledby="filosofia-title">
   <div class="m-wrap">
-    <h2 id="filosofia-title" class="m-label">Filosofia</h2>
+    <header class="head">
+      <h2 id="filosofia-title" class="m-label">Filosofia</h2>
+      <p class="m-label">{pad(principles.length)} regole</p>
+    </header>
+
     <ol role="list" class="list">
       {
         principles.map((item, i) => (
-          <li class="item">
+          <li class="item m-reveal">
             <span class="index">{pad(i + 1)}</span>
             <h3 class="title">{item.title}</h3>
             <p class="text">{item.text}</p>
@@ -28,62 +32,73 @@ const { principles } = Astro.props;
 <style>
   .principles {
     padding-block: var(--m-section);
-    border-top: 1px solid var(--m-line);
   }
 
-  .list {
-    display: grid;
-    margin-top: 2.5rem;
+  .head {
+    display: flex;
+    justify-content: space-between;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--m-ink);
   }
 
   .item {
     display: grid;
-    grid-template-columns: 2.5rem 1fr;
-    gap: 0.25rem 1rem;
-    padding-block: 1.75rem;
+    grid-template-columns: 1fr auto;
+    gap: 0.5rem 1rem;
+    padding-block: 2rem;
     border-bottom: 1px solid var(--m-line);
   }
 
-  .item:first-child {
-    border-top: 1px solid var(--m-line);
-  }
-
   .index {
-    grid-row: span 2;
+    grid-column: 2;
+    grid-row: 1;
     font-size: 0.75rem;
     color: var(--m-muted);
     font-variant-numeric: tabular-nums;
-    padding-top: 0.45rem;
+    padding-top: 0.6rem;
   }
 
   .title {
-    font-size: 1.5rem;
+    grid-row: 1;
+    font-size: clamp(2rem, 9vw, 3rem);
     font-weight: 500;
-    letter-spacing: -0.03em;
+    line-height: 1;
+    letter-spacing: -0.05em;
   }
 
   .text {
+    grid-column: 1 / -1;
     color: var(--m-muted);
-    max-width: 34ch;
+    max-width: 32ch;
   }
 
   @media (min-width: 48rem) {
     .list {
+      display: grid;
       grid-template-columns: repeat(3, 1fr);
-      gap: 2.5rem;
     }
 
-    .item,
-    .item:first-child {
+    .item {
       grid-template-columns: 1fr;
-      border-top: 1px solid var(--m-ink);
+      align-content: start;
+      padding: 2rem 2rem 0 0;
       border-bottom: 0;
     }
 
-    .index {
+    .item + .item {
+      padding-left: 2rem;
+      border-left: 1px solid var(--m-line);
+    }
+
+    .index,
+    .title {
+      grid-column: 1;
       grid-row: auto;
+    }
+
+    .index {
       padding-top: 0;
-      margin-bottom: 2rem;
+      margin-bottom: 4rem;
     }
   }
 </style>

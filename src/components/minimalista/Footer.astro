@@ -1,47 +1,100 @@
 ---
-import type { Contact } from '@/types/restaurant';
+import type { Contact, NavLink } from '@/types/restaurant';
 
 interface Props {
   name: string;
+  nav: NavLink[];
   contact: Contact;
 }
 
-const { name, contact } = Astro.props;
+const { name, nav, contact } = Astro.props;
 const year = new Date().getFullYear();
 ---
 
 <footer class="footer">
-  <div class="m-wrap inner">
-    <p>© {year} {name}</p>
-    {
-      contact.instagram && (
-        <a href={`https://instagram.com/${contact.instagram}`} rel="noopener noreferrer" target="_blank">
-          @{contact.instagram}
-        </a>
-      )
-    }
+  <div class="m-wrap">
+    <div class="top">
+      <ul role="list" class="nav">
+        {nav.map((link) => <li><a href={link.href}>{link.label}</a></li>)}
+      </ul>
+      {
+        contact.instagram && (
+          <a class="social" href={`https://instagram.com/${contact.instagram}`} rel="noopener noreferrer" target="_blank">
+            Instagram ↗
+          </a>
+        )
+      }
+    </div>
+
+    <p class="wordmark" aria-hidden="true">{name}<span>.</span></p>
+
+    <div class="bottom">
+      <p>© {year} {name} Milano</p>
+      <a href="#contenuto">Torna su ↑</a>
+    </div>
   </div>
 </footer>
 
 <style>
   .footer {
-    padding-block: 2rem;
-    border-top: 1px solid var(--m-line);
-    font-size: 0.8125rem;
-    color: var(--m-muted);
+    padding-top: 3rem;
+    background: var(--m-ink);
+    color: var(--m-bg);
+    overflow: hidden;
   }
 
-  .inner {
+  .top {
     display: flex;
     justify-content: space-between;
-    gap: 1rem;
+    gap: 2rem;
+    font-size: 0.875rem;
+  }
+
+  .nav {
+    display: grid;
+    gap: 0.4rem;
   }
 
   a {
     text-decoration: none;
+    opacity: 0.7;
+    transition: opacity 0.2s ease;
   }
 
   a:hover {
-    color: var(--m-ink);
+    opacity: 1;
+  }
+
+  .wordmark {
+    margin-block: 3rem -0.12em;
+    font-size: clamp(8rem, 41vw, 26rem);
+    font-weight: 600;
+    white-space: nowrap;
+    line-height: 0.8;
+    letter-spacing: -0.08em;
+    margin-left: -0.06em;
+  }
+
+  .wordmark span {
+    color: var(--m-accent);
+  }
+
+  .bottom {
+    position: relative;
+    background: var(--m-ink);
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    padding-block: 1.25rem calc(1.25rem + env(safe-area-inset-bottom));
+    border-top: 1px solid rgb(244 242 238 / 0.15);
+    font-size: 0.75rem;
+    color: rgb(244 242 238 / 0.8);
+  }
+
+  @media (min-width: 48rem) {
+    .nav {
+      display: flex;
+      gap: 2rem;
+    }
   }
 </style>

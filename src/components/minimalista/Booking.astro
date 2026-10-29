@@ -1,0 +1,377 @@
+---
+import type { Contact, OpeningHours } from '@/types/restaurant';
+import type { MinimalistaContent } from '@/data/minimalista';
+import { toTelHref } from '@/utils/format';
+
+interface Props {
+  hours: OpeningHours[];
+  contact: Contact;
+  booking: MinimalistaContent['booking'];
+}
+
+const { hours, contact, booking } = Astro.props;
+const guests = Array.from({ length: booking.maxGuests }, (_, i) => i + 1);
+---
+
+<section id="prenota" class="booking" aria-labelledby="prenota-title">
+  <div class="m-wrap layout">
+    <header class="head">
+      <h2 id="prenota-title" class="m-label">Prenota</h2>
+      <p class="lead">Solo dodici posti.<br />Meglio prenotare.</p>
+    </header>
+
+    <!-- Senza JavaScript il form apre comunque il client di posta; con JS il messaggio è già scritto. -->
+    <form class="form" action={`mailto:${contact.email}`} method="post" enctype="text/plain" data-booking-form data-email={contact.email}>
+      <fieldset class="field">
+        <legend>Persone</legend>
+        <div class="options">
+          {
+            guests.map((n) => (
+              <label class="option">
+                <input type="radio" name="persone" value={n} checked={n === 2} required />
+                <span>{n}</span>
+              </label>
+            ))
+          }
+        </div>
+      </fieldset>
+
+      <div class="field">
+        <label for="booking-date">Data</label>
+        <input id="booking-date" class="input" type="date" name="data" required />
+      </div>
+
+      <fieldset class="field">
+        <legend>Orario</legend>
+        <div class="options options--wide">
+          {
+            booking.times.map((time, i) => (
+              <label class="option">
+                <input type="radio" name="orario" value={time} checked={i === 1} required />
+                <span>{time}</span>
+              </label>
+            ))
+          }
+        </div>
+      </fieldset>
+
+      <div class="field">
+        <label for="booking-name">Nome</label>
+        <input id="booking-name" class="input" type="text" name="nome" autocomplete="name" placeholder="Il tuo nome" required />
+      </div>
+
+      <div class="field">
+        <label for="booking-notes">Note <span class="optional">(facoltativo)</span></label>
+        <textarea id="booking-notes" class="input" name="note" rows="2" placeholder="Allergie, occasioni speciali…"></textarea>
+      </div>
+
+      <button class="submit" type="submit">
+        <span>Richiedi il tavolo</span>
+        <svg viewBox="0 0 16 16" width="16" height="16" aria-hidden="true"><path d="M2 8h12m0 0-5-5m5 5-5 5" stroke="currentColor" fill="none" stroke-width="1.25" /></svg>
+      </button>
+      <p class="hint">Ti confermiamo il tavolo entro poche ore. Per stasera, chiama.</p>
+    </form>
+
+    <aside class="info">
+      <div>
+        <h3 class="m-label">Orari</h3>
+        <dl class="hours">
+          {
+            hours.map((row) => (
+              <div class="row">
+                <dt>{row.days}</dt>
+                <dd>{row.hours}</dd>
+              </div>
+            ))
+          }
+        </dl>
+      </div>
+
+      <div>
+        <h3 class="m-label">Dove</h3>
+        <address class="address">
+          {contact.address}<br />
+          {contact.city}
+        </address>
+        <ul role="list" class="links">
+          <li><a href={toTelHref(contact.phone)}>{contact.phone}</a></li>
+          <li><a href={`mailto:${contact.email}`}>{contact.email}</a></li>
+          <li>
+            <a href={`https://maps.google.com/?q=${encodeURIComponent(`${contact.address}, ${contact.city}`)}`} rel="noopener noreferrer" target="_blank">
+              Apri in Mappe ↗
+            </a>
+          </li>
+        </ul>
+      </div>
+    </aside>
+  </div>
+</section>
+
+<script>
+  const form = document.querySelector<HTMLFormElement>('[data-booking-form]');
+  const date = form?.querySelector<HTMLInputElement>('input[type="date"]');
+
+  if (form && date) {
+    // Data minima: oggi, nel formato richiesto dall'input (YYYY-MM-DD).
+    const today = new Date();
+    today.setMinutes(today.getMinutes() - today.getTimezoneOffset());
+    date.min = today.toISOString().slice(0, 10);
+
+    form.addEventListener('submit', (event) => {
+      event.preventDefault();
+      if (!form.reportValidity()) return;
+
+      const data = new FormData(form);
+      const formattedDate = new Date(`${data.get('data')}T12:00`).toLocaleDateString('it-IT', {
+        weekday: 'long',
+        day: 'numeric',
+        month: 'long',
+      });
+      const subject = `Prenotazione — ${data.get('persone')} persone, ${formattedDate}`;
+      const body = [
+        'Buongiorno,',
+        '',
+        `vorrei prenotare un tavolo per ${data.get('persone')} persone ${formattedDate} alle ${data.get('orario')}.`,
+        data.get('note') ? `Note: ${data.get('note')}` : '',
+        '',
+        `Grazie, ${data.get('nome')}`,
+      ]
+        .filter((line, i, all) => line !== '' || all[i - 1] !== '')
+        .join('\n');
+
+      window.location.href = `mailto:${form.dataset.email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+    });
+  }
+</script>
+
+<style>
+  .booking {
+    padding-block: var(--m-section);
+    border-top: 1px solid var(--m-line);
+  }
+
+  .layout {
+    display: grid;
+    gap: 3rem;
+  }
+
+  .lead {
+    margin-top: 1rem;
+    font-size: clamp(2.25rem, 10vw, 3.75rem);
+    font-weight: 400;
+    line-height: 1;
+    letter-spacing: -0.055em;
+  }
+
+  .form {
+    display: grid;
+    gap: 1.75rem;
+  }
+
+  fieldset {
+    border: 0;
+    padding: 0;
+    min-width: 0;
+  }
+
+  .field {
+    display: grid;
+    gap: 0.6rem;
+  }
+
+  .field > label,
+  legend {
+    padding: 0;
+    margin-bottom: 0.6rem;
+    font-size: 0.75rem;
+    font-weight: 500;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--m-muted);
+  }
+
+  .field > label {
+    margin-bottom: 0;
+  }
+
+  .optional {
+    text-transform: none;
+    letter-spacing: 0;
+    font-weight: 400;
+  }
+
+  .options {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 0.4rem;
+  }
+
+  .options--wide {
+    grid-template-columns: repeat(5, 1fr);
+  }
+
+  .option {
+    position: relative;
+  }
+
+  .option input {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    cursor: pointer;
+  }
+
+  .option span {
+    display: grid;
+    place-items: center;
+    height: 3rem;
+    border: 1px solid var(--m-line);
+    border-radius: 999px;
+    font-variant-numeric: tabular-nums;
+    transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+  }
+
+  .option:hover span {
+    border-color: var(--m-ink);
+  }
+
+  .option input:checked + span {
+    background: var(--m-ink);
+    border-color: var(--m-ink);
+    color: var(--m-bg);
+  }
+
+  .option input:focus-visible + span {
+    outline: 1px solid var(--m-ink);
+    outline-offset: 3px;
+  }
+
+  .input {
+    width: 100%;
+    min-height: 3.25rem;
+    padding: 0.85rem 0;
+    border: 0;
+    border-bottom: 1px solid var(--m-ink);
+    border-radius: 0;
+    background: transparent;
+    font-size: 1.125rem;
+    appearance: none;
+  }
+
+  .input::placeholder {
+    color: rgb(20 20 20 / 0.35);
+  }
+
+  .input:focus {
+    outline: none;
+    border-bottom-color: var(--m-accent);
+  }
+
+  textarea.input {
+    resize: vertical;
+  }
+
+  .submit {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    min-height: 3.75rem;
+    padding-inline: 1.75rem;
+    border: 0;
+    border-radius: 999px;
+    background: var(--m-ink);
+    color: var(--m-bg);
+    font-weight: 500;
+    font-size: 1rem;
+    transition: background 0.2s ease;
+  }
+
+  .submit:hover {
+    background: var(--m-accent);
+  }
+
+  .submit svg {
+    transition: transform 0.2s ease;
+  }
+
+  .submit:hover svg {
+    transform: translateX(4px);
+  }
+
+  .hint {
+    margin-top: -0.75rem;
+    font-size: 0.8125rem;
+    color: var(--m-muted);
+    text-align: center;
+  }
+
+  .info {
+    display: grid;
+    gap: 2.5rem;
+  }
+
+  .hours {
+    margin-top: 1rem;
+    border-top: 1px solid var(--m-ink);
+  }
+
+  .row {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    padding-block: 0.9rem;
+    border-bottom: 1px solid var(--m-line);
+  }
+
+  dd {
+    font-variant-numeric: tabular-nums;
+    color: var(--m-muted);
+  }
+
+  .address {
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--m-ink);
+    font-style: normal;
+    font-size: 1.125rem;
+    line-height: 1.4;
+  }
+
+  .links {
+    display: grid;
+    gap: 0.35rem;
+    margin-top: 1rem;
+    font-size: 0.875rem;
+  }
+
+  .links a {
+    color: var(--m-muted);
+    text-decoration: none;
+    transition: color 0.2s ease;
+  }
+
+  .links a:hover {
+    color: var(--m-ink);
+  }
+
+  @media (min-width: 48rem) {
+    .layout {
+      grid-template-columns: 1fr 1fr;
+      gap: 4rem 6rem;
+    }
+
+    .head {
+      grid-column: 1 / -1;
+    }
+
+    .info {
+      align-content: start;
+    }
+  }
+
+  @media (min-width: 64rem) {
+    .layout {
+      grid-template-columns: 1.2fr 1fr;
+    }
+  }
+</style>

@@ -5,11 +5,14 @@ import '@/styles/themes/minimalista.css';
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import Header from '@/components/minimalista/Header.astro';
 import Hero from '@/components/minimalista/Hero.astro';
+import Manifesto from '@/components/minimalista/Manifesto.astro';
 import Principles from '@/components/minimalista/Principles.astro';
 import Menu from '@/components/minimalista/Menu.astro';
-import Visit from '@/components/minimalista/Visit.astro';
+import Suppliers from '@/components/minimalista/Suppliers.astro';
+import Booking from '@/components/minimalista/Booking.astro';
 import Footer from '@/components/minimalista/Footer.astro';
 import { minimalista as content } from '@/data/minimalista';
+import { toTelHref } from '@/utils/format';
 ---
 
 <BaseLayout
@@ -18,12 +21,28 @@ import { minimalista as content } from '@/data/minimalista';
   themeColor="#f4f2ee"
   theme="theme-minimalista"
 >
-  <Header name={content.name} nav={content.nav} />
+  <Header
+    name={content.name}
+    nav={content.nav}
+    schedule={content.schedule}
+    phone={content.contact.phone}
+    phoneHref={toTelHref(content.contact.phone)}
+  />
   <main id="contenuto">
-    <Hero name={content.name} tagline={content.tagline} description={content.description} city="Milano" />
+    <Hero
+      name={content.name}
+      tagline={content.tagline}
+      description={content.description}
+      city="Milano"
+      meta={content.meta}
+      figures={content.figures}
+      schedule={content.schedule}
+    />
+    <Manifesto manifesto={content.manifesto} />
     <Principles principles={content.principles} />
     <Menu sections={content.menu} tasting={content.tasting} />
-    <Visit hours={content.hours} contact={content.contact} />
+    <Suppliers suppliers={content.suppliers} />
+    <Booking hours={content.hours} contact={content.contact} booking={content.booking} />
   </main>
-  <Footer name={content.name} contact={content.contact} />
+  <Footer name={content.name} nav={content.nav} contact={content.contact} />
 </BaseLayout>

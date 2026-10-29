@@ -1,62 +1,131 @@
 ---
+import type { MinimalistaContent } from '@/data/minimalista';
+import OpenStatus from './OpenStatus.astro';
+
 interface Props {
   name: string;
   tagline: string;
   description: string;
   city: string;
+  meta: MinimalistaContent['meta'];
+  figures: MinimalistaContent['figures'];
+  schedule: MinimalistaContent['schedule'];
 }
 
-const { name, tagline, description, city } = Astro.props;
+const { name, tagline, description, city, meta, figures, schedule } = Astro.props;
 ---
 
 <section class="hero" aria-labelledby="hero-title">
-  <div class="m-wrap grid">
-    <p class="m-label meta">Ristorante — {city}</p>
+  <div class="m-wrap stage">
+    <div class="meta">
+      <p class="m-label">Ristorante · {city}</p>
+      <OpenStatus schedule={schedule} />
+    </div>
+
+    <figure class="plate" aria-hidden="true">
+      <svg viewBox="0 0 400 400" fill="none">
+        <circle cx="200" cy="200" r="196" stroke="currentColor" stroke-width="0.6" />
+        <circle cx="200" cy="200" r="150" stroke="currentColor" stroke-width="0.6" />
+        <circle class="ring" cx="200" cy="200" r="120" stroke="currentColor" stroke-width="0.6" stroke-dasharray="1 7" />
+        <circle class="grain" cx="232" cy="176" r="6" />
+      </svg>
+    </figure>
 
     <h1 id="hero-title" class="title">
       <span class="name">{name}<span class="dot" aria-hidden="true">.</span></span>
       <span class="tagline">{tagline}</span>
     </h1>
+  </div>
 
-    <figure class="plate" aria-hidden="true">
-      <svg viewBox="0 0 200 200" fill="none">
-        <circle cx="100" cy="100" r="92" stroke="currentColor" stroke-width="0.75" />
-        <circle cx="100" cy="100" r="64" stroke="currentColor" stroke-width="0.75" />
-        <circle class="grain" cx="112" cy="90" r="3.5" />
-      </svg>
-    </figure>
-
+  <div class="m-wrap details">
     <p class="description">{description}</p>
 
-    <a class="scroll" href="#filosofia">
-      <span>Scopri</span>
-      <svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><path d="M8 2v12m0 0 5-5m-5 5-5-5" stroke="currentColor" fill="none" stroke-width="1.25" /></svg>
-    </a>
+    <div class="buttons">
+      <a class="btn btn--solid" href="#prenota">Prenota un tavolo</a>
+      <a class="btn btn--ghost" href="#menu">
+        Vedi il menu
+        <svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><path d="M8 2v12m0 0 5-5m-5 5-5-5" stroke="currentColor" fill="none" stroke-width="1.25" /></svg>
+      </a>
+    </div>
+
+    <dl class="figures">
+      {
+        figures.map((f) => (
+          <div class="figure">
+            <dt>{f.label}</dt>
+            <dd>{f.value}</dd>
+          </div>
+        ))
+      }
+    </dl>
+
+    <p class="coords">
+      <span>{meta.since}</span>
+      <span>{meta.coordinates}</span>
+    </p>
   </div>
 </section>
 
 <style>
   .hero {
-    padding-block: 3rem var(--m-section);
+    overflow: hidden;
   }
 
-  .grid {
+  /* Prima schermata su mobile: il nome occupa la parte bassa, il piatto quella alta. */
+  .stage {
+    position: relative;
     display: grid;
-    gap: 2.5rem;
+    grid-template-rows: auto 1fr auto;
+    min-height: calc(100svh - 3.75rem);
+    max-height: 56rem;
+    padding-block: 1.25rem 2rem;
+  }
+
+  .meta {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem 1rem;
+  }
+
+  .plate {
+    position: absolute;
+    top: 12%;
+    right: -38%;
+    width: 120%;
+    max-width: 44rem;
+    color: var(--m-ink);
+    opacity: 0.9;
+    animation: plate-in 1.4s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+  }
+
+  .ring {
+    transform-origin: 200px 200px;
+    animation: spin 60s linear infinite;
+  }
+
+  .grain {
+    fill: var(--m-accent);
   }
 
   .title {
+    position: relative;
+    grid-row: 3;
     display: grid;
-    gap: 1rem;
+    gap: 0.75rem;
     font-weight: 400;
   }
 
   .name {
-    font-size: clamp(5.5rem, 32vw, 14rem);
+    font-size: clamp(6rem, 38vw, 17rem);
     font-weight: 600;
-    line-height: 0.82;
-    letter-spacing: -0.07em;
-    margin-left: -0.05em;
+    line-height: 0.78;
+    letter-spacing: -0.075em;
+    margin-left: -0.06em;
+    animation: rise 1s cubic-bezier(0.2, 0.7, 0.2, 1) 0.1s both;
   }
 
   .dot {
@@ -64,70 +133,156 @@ const { name, tagline, description, city } = Astro.props;
   }
 
   .tagline {
-    font-size: 1.5rem;
+    font-size: clamp(1.5rem, 6.5vw, 2.5rem);
     font-weight: 300;
-    letter-spacing: -0.02em;
+    letter-spacing: -0.035em;
+    animation: rise 1s cubic-bezier(0.2, 0.7, 0.2, 1) 0.25s both;
   }
 
-  .plate {
-    width: min(70%, 18rem);
-    justify-self: end;
-    color: var(--m-ink);
-    opacity: 0.85;
-  }
-
-  .grain {
-    fill: var(--m-accent);
+  .details {
+    display: grid;
+    gap: 2rem;
+    padding-bottom: var(--m-section);
   }
 
   .description {
-    max-width: 30ch;
+    max-width: 34ch;
     color: var(--m-muted);
     font-size: 1.0625rem;
     line-height: 1.6;
   }
 
-  .scroll {
+  .buttons {
+    display: grid;
+    gap: 0.6rem;
+  }
+
+  .btn {
     display: inline-flex;
     align-items: center;
+    justify-content: center;
     gap: 0.5rem;
-    width: fit-content;
-    font-size: 0.875rem;
+    min-height: 3.25rem;
+    padding-inline: 1.5rem;
+    border-radius: 999px;
+    font-weight: 500;
     text-decoration: none;
-    border-bottom: 1px solid var(--m-line);
-    padding-bottom: 0.25rem;
+    transition: opacity 0.2s ease, background 0.2s ease;
+  }
+
+  .btn--solid {
+    background: var(--m-ink);
+    color: var(--m-bg);
+  }
+
+  .btn--solid:hover {
+    opacity: 0.85;
+  }
+
+  .btn--ghost {
+    border: 1px solid var(--m-line);
+  }
+
+  .btn--ghost:hover {
+    background: rgb(20 20 20 / 0.04);
+  }
+
+  .figures {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    border-top: 1px solid var(--m-ink);
+  }
+
+  .figure {
+    display: flex;
+    flex-direction: column-reverse;
+    gap: 0.35rem;
+    padding: 1rem 0.75rem 0 0;
+  }
+
+  .figure + .figure {
+    padding-left: 0.75rem;
+    border-left: 1px solid var(--m-line);
+  }
+
+  dd {
+    font-size: clamp(1.75rem, 8vw, 3rem);
+    font-weight: 500;
+    letter-spacing: -0.05em;
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
+  }
+
+  dt {
+    font-size: 0.75rem;
+    color: var(--m-muted);
+  }
+
+  .coords {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    font-size: 0.6875rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--m-muted);
+    font-variant-numeric: tabular-nums;
+  }
+
+  @keyframes rise {
+    from {
+      opacity: 0;
+      transform: translateY(0.6em);
+    }
+  }
+
+  @keyframes plate-in {
+    from {
+      opacity: 0;
+      transform: scale(0.94) rotate(-12deg);
+    }
+  }
+
+  @keyframes spin {
+    to {
+      transform: rotate(360deg);
+    }
   }
 
   @media (min-width: 48rem) {
-    .hero {
-      padding-top: 6rem;
-    }
-
-    .grid {
-      grid-template-columns: 1fr 1fr;
-      align-items: end;
-      row-gap: 4rem;
-    }
-
-    .meta,
-    .title {
-      grid-column: 1 / -1;
+    .stage {
+      min-height: min(calc(100svh - 3.75rem), 52rem);
+      padding-block: 2rem 3rem;
     }
 
     .plate {
-      grid-row: 3;
-      grid-column: 2;
-      width: 20rem;
+      top: 4%;
+      right: -6%;
+      width: 58%;
     }
 
-    .description {
-      grid-row: 3;
-      grid-column: 1;
-      align-self: end;
+    .details {
+      grid-template-columns: 1fr 1fr;
+      align-items: end;
+      gap: 3rem 4rem;
     }
 
-    .tagline {
-      font-size: 2.25rem;
+    .buttons {
+      display: flex;
+      justify-content: flex-end;
+    }
+
+    .figures,
+    .coords {
+      grid-column: 1 / -1;
+    }
+
+    .figure {
+      padding-top: 1.5rem;
+    }
+
+    .figure + .figure {
+      padding-left: 1.5rem;
     }
   }
 </style>

@@ -51,3 +51,21 @@
   text-transform: uppercase;
   color: var(--m-muted);
 }
+
+/* Comparsa progressiva legata allo scroll, solo dove supportata e senza preferenze contrarie. */
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .theme-minimalista .m-reveal {
+      animation: m-reveal linear both;
+      animation-timeline: view();
+      animation-range: entry 0% entry 60%;
+    }
+  }
+}
+
+@keyframes m-reveal {
+  from {
+    opacity: 0;
+    transform: translateY(1.5rem);
+  }
+}
