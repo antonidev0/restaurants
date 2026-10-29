@@ -1,0 +1,242 @@
+---
+import type { Contact, OpeningHours } from '@/types/restaurant';
+import type { EditorialeContent } from '@/data/editoriale';
+import { toTelHref } from '@/utils/format';
+
+interface Props {
+  name: string;
+  description: string;
+  hours: OpeningHours[];
+  contact: Contact;
+  coupon: EditorialeContent['coupon'];
+}
+
+const { name, description, hours, contact, coupon } = Astro.props;
+const mapsHref = `https://maps.google.com/?q=${encodeURIComponent(`${contact.address}, ${contact.city}`)}`;
+---
+
+<section id="indirizzo" class="classified" aria-labelledby="indirizzo-title">
+  <div class="e-wrap">
+    <div class="e-section-head">
+      <span>Piccoli annunci</span>
+      <span>Pagina 7</span>
+    </div>
+
+    <div class="grid">
+      <div class="ad ad--main">
+        <p class="e-kicker">Cercasi commensali</p>
+        <h2 id="indirizzo-title" class="title">Tavolo libero stasera?</h2>
+        <p class="text">{description}</p>
+        <a class="btn" href={toTelHref(contact.phone)}>Prenota al {contact.phone}</a>
+        <a class="btn btn--ghost" href={`mailto:${contact.email}?subject=${encodeURIComponent('Prenotazione')}`}>Oppure scrivi alla redazione</a>
+      </div>
+
+      <div class="ad">
+        <h3 class="ad-title">Orari d’apertura</h3>
+        <dl>
+          {
+            hours.map((row) => (
+              <div class="row">
+                <dt>{row.days}</dt>
+                <dd>{row.hours}</dd>
+              </div>
+            ))
+          }
+        </dl>
+      </div>
+
+      <div class="ad">
+        <h3 class="ad-title">Recapito</h3>
+        <address>
+          <strong>{name}</strong><br />
+          {contact.address}<br />
+          {contact.city}<br />
+          <a href={`mailto:${contact.email}`}>{contact.email}</a>
+        </address>
+        <a class="maps" href={mapsHref} rel="noopener noreferrer" target="_blank">Come arrivare ↗</a>
+      </div>
+
+      <div class="coupon">
+        <span class="scissors" aria-hidden="true">✂</span>
+        <p class="e-kicker">{coupon.title}</p>
+        <p class="coupon-text">{coupon.text}</p>
+        <p class="code">{coupon.code}</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .classified {
+    padding-block: 2rem 3.5rem;
+  }
+
+  .grid {
+    display: grid;
+    gap: 1rem;
+    margin-top: 1.5rem;
+  }
+
+  .ad {
+    padding: 1.25rem;
+    border: 1px solid var(--e-rule);
+  }
+
+  .ad--main {
+    display: grid;
+    gap: 0.9rem;
+    border-width: 3px;
+    border-style: double;
+  }
+
+  .title {
+    font-family: var(--e-display);
+    font-size: clamp(2rem, 9vw, 3.25rem);
+    font-weight: 900;
+    line-height: 1;
+  }
+
+  .text {
+    line-height: 1.55;
+  }
+
+  .btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 3.25rem;
+    padding-inline: 1rem;
+    background: var(--e-red);
+    color: var(--e-paper);
+    font-family: var(--e-mono);
+    font-size: 0.85rem;
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    text-decoration: none;
+    transition: background 0.2s ease;
+  }
+
+  .btn:hover {
+    background: var(--e-ink);
+  }
+
+  .btn--ghost {
+    background: transparent;
+    color: var(--e-ink);
+    border: 1px solid var(--e-rule);
+  }
+
+  .btn--ghost:hover {
+    background: var(--e-ink);
+    color: var(--e-paper);
+  }
+
+  .maps {
+    display: inline-block;
+    margin-top: 0.75rem;
+    font-family: var(--e-mono);
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    text-decoration-color: var(--e-red);
+    text-underline-offset: 4px;
+  }
+
+  /* Buono da ritagliare: bordo tratteggiato e forbici sul filo. */
+  .coupon {
+    position: relative;
+    display: grid;
+    gap: 0.6rem;
+    padding: 1.5rem 1.25rem 1.25rem;
+    border: 2px dashed var(--e-ink);
+    text-align: center;
+    background:
+      repeating-linear-gradient(45deg, transparent 0 10px, rgb(192 39 45 / 0.04) 10px 20px);
+  }
+
+  .scissors {
+    position: absolute;
+    top: -0.95rem;
+    left: 1.5rem;
+    padding-inline: 0.3rem;
+    background: var(--e-paper);
+    font-size: 1.25rem;
+    rotate: -90deg;
+  }
+
+  .coupon-text {
+    font-family: var(--e-display);
+    font-size: 1.3rem;
+    font-weight: 700;
+    line-height: 1.2;
+  }
+
+  .code {
+    justify-self: center;
+    padding: 0.35rem 0.75rem;
+    background: var(--e-ink);
+    color: var(--e-paper);
+    font-family: var(--e-mono);
+    font-size: 0.9rem;
+    letter-spacing: 0.2em;
+  }
+
+  .ad-title {
+    margin-bottom: 0.75rem;
+    font-family: var(--e-mono);
+    font-size: 0.75rem;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+
+  .row + .row {
+    margin-top: 0.75rem;
+    padding-top: 0.75rem;
+    border-top: 1px dashed var(--e-hair);
+  }
+
+  dt {
+    font-weight: 600;
+  }
+
+  dd {
+    font-family: var(--e-mono);
+    font-size: 0.85rem;
+    color: var(--e-muted);
+  }
+
+  address {
+    font-style: normal;
+    line-height: 1.6;
+  }
+
+  address a {
+    text-decoration-color: var(--e-red);
+  }
+
+  @media (min-width: 48rem) {
+    .grid {
+      grid-template-columns: 1fr 1fr;
+    }
+
+    .ad--main {
+      grid-row: span 2;
+    }
+  }
+
+  @media (min-width: 64rem) {
+    .grid {
+      grid-template-columns: 2fr 1fr 1fr;
+    }
+
+    .ad--main {
+      grid-row: auto;
+    }
+
+    .coupon {
+      grid-column: 2 / -1;
+    }
+  }
+</style>

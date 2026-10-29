@@ -1,0 +1,164 @@
+---
+import type { AestheticContent } from '@/data/aesthetic';
+import { formatPrice } from '@/utils/format';
+import Illustration from './Illustration.astro';
+
+interface Props {
+  dishes: AestheticContent['signature'];
+}
+
+const { dishes } = Astro.props;
+---
+
+<section id="piatti" class="signature" aria-labelledby="piatti-title">
+  <div class="a-wrap head">
+    <p class="a-eyebrow">I preferiti</p>
+    <h2 id="piatti-title" class="a-title">Piatti <em>del cuore</em></h2>
+    <p class="hint" aria-hidden="true">scorri →</p>
+  </div>
+
+  <ul role="list" class="track">
+    {
+      dishes.map((dish) => (
+        <li class:list={['card', `mood-${dish.mood}`]}>
+          <div class="art">
+            <Illustration mood={dish.mood} class="art-svg" />
+          </div>
+          <div class="body">
+            {dish.tags && (
+              <ul role="list" class="tags">
+                {dish.tags.map((tag) => <li>{tag}</li>)}
+              </ul>
+            )}
+            <h3 class="name">{dish.name}</h3>
+            <p class="desc">{dish.description}</p>
+            <p class="price">{formatPrice(dish.price)}</p>
+          </div>
+        </li>
+      ))
+    }
+  </ul>
+</section>
+
+<style>
+  .signature {
+    padding-block: 3rem 4rem;
+  }
+
+  .head {
+    display: grid;
+    gap: 0.75rem;
+  }
+
+  .hint {
+    font-family: var(--a-serif);
+    font-style: italic;
+    color: var(--a-muted);
+  }
+
+  /* Carosello nativo con scroll-snap: nessun JavaScript necessario. */
+  .track {
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: 78%;
+    gap: 1rem;
+    margin-top: 2rem;
+    padding-inline: var(--a-gutter);
+    padding-bottom: 1rem;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scroll-padding-inline: var(--a-gutter);
+    scrollbar-width: none;
+  }
+
+  .track::-webkit-scrollbar {
+    display: none;
+  }
+
+  .card {
+    display: grid;
+    grid-template-rows: auto 1fr;
+    scroll-snap-align: start;
+    padding: 0.6rem;
+    background: var(--a-paper);
+    border-radius: var(--a-arch);
+  }
+
+  .art {
+    display: grid;
+    place-items: center;
+    aspect-ratio: 1;
+    border-radius: 999px 999px 1.25rem 1.25rem;
+    background: radial-gradient(circle at 50% 35%, var(--a-paper) 0 18%, var(--mood) 60%, var(--mood-2));
+  }
+
+  .art :global(.art-svg) {
+    width: 70%;
+    transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  .card:hover .art :global(.art-svg) {
+    transform: rotate(-8deg) scale(1.06);
+  }
+
+  .body {
+    display: grid;
+    align-content: start;
+    gap: 0.5rem;
+    padding: 1.25rem 0.9rem 1rem;
+  }
+
+  .tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+  }
+
+  .tags li {
+    padding: 0.2rem 0.65rem;
+    border-radius: 999px;
+    background: var(--mood);
+    font-size: 0.7rem;
+    font-weight: 500;
+    letter-spacing: 0.04em;
+  }
+
+  .name {
+    font-family: var(--a-serif);
+    font-size: 1.6rem;
+    font-weight: 500;
+    line-height: 1.1;
+  }
+
+  .desc {
+    font-size: 0.9rem;
+    color: var(--a-muted);
+  }
+
+  .price {
+    margin-top: 0.5rem;
+    font-family: var(--a-display);
+    font-size: 1.5rem;
+    color: var(--a-terracotta);
+  }
+
+  @media (min-width: 48rem) {
+    .hint {
+      display: none;
+    }
+
+    .track {
+      grid-auto-flow: row;
+      grid-template-columns: repeat(2, 1fr);
+      max-width: var(--a-max);
+      margin-inline: auto;
+      overflow: visible;
+    }
+  }
+
+  @media (min-width: 64rem) {
+    .track {
+      grid-template-columns: repeat(4, 1fr);
+    }
+  }
+</style>

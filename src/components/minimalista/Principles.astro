@@ -1,0 +1,104 @@
+---
+import { pad } from '@/utils/format';
+
+interface Props {
+  principles: { title: string; text: string }[];
+}
+
+const { principles } = Astro.props;
+---
+
+<section id="filosofia" class="principles" aria-labelledby="filosofia-title">
+  <div class="m-wrap">
+    <header class="head">
+      <h2 id="filosofia-title" class="m-label">Filosofia</h2>
+      <p class="m-label">{pad(principles.length)} regole</p>
+    </header>
+
+    <ol role="list" class="list">
+      {
+        principles.map((item, i) => (
+          <li class="item m-reveal">
+            <span class="index">{pad(i + 1)}</span>
+            <h3 class="title">{item.title}</h3>
+            <p class="text">{item.text}</p>
+          </li>
+        ))
+      }
+    </ol>
+  </div>
+</section>
+
+<style>
+  .principles {
+    padding-block: var(--m-section);
+  }
+
+  .head {
+    display: flex;
+    justify-content: space-between;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--m-ink);
+  }
+
+  .item {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 0.5rem 1rem;
+    padding-block: 2rem;
+    border-bottom: 1px solid var(--m-line);
+  }
+
+  .index {
+    grid-column: 2;
+    grid-row: 1;
+    font-size: 0.75rem;
+    color: var(--m-muted);
+    font-variant-numeric: tabular-nums;
+    padding-top: 0.6rem;
+  }
+
+  .title {
+    grid-row: 1;
+    font-size: clamp(2rem, 9vw, 3rem);
+    font-weight: 500;
+    line-height: 1;
+    letter-spacing: -0.05em;
+  }
+
+  .text {
+    grid-column: 1 / -1;
+    color: var(--m-muted);
+    max-width: 32ch;
+  }
+
+  @media (min-width: 48rem) {
+    .list {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+    }
+
+    .item {
+      grid-template-columns: 1fr;
+      align-content: start;
+      padding: 2rem 2rem 0 0;
+      border-bottom: 0;
+    }
+
+    .item + .item {
+      padding-left: 2rem;
+      border-left: 1px solid var(--m-line);
+    }
+
+    .index,
+    .title {
+      grid-column: 1;
+      grid-row: auto;
+    }
+
+    .index {
+      padding-top: 0;
+      margin-bottom: 4rem;
+    }
+  }
+</style>

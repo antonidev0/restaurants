@@ -1,0 +1,68 @@
+---
+interface Props {
+  manifesto: { text: string; highlight: string[] };
+}
+
+const { manifesto } = Astro.props;
+const words = manifesto.text.split(' ');
+---
+
+<section class="manifesto" aria-label="Manifesto">
+  <div class="m-wrap">
+    <p class="text">
+      {
+        words.map((word, i) => (
+          <>
+            <span class:list={['word', { 'is-accent': manifesto.highlight.includes(word) }]} style={`--i:${i}`}>
+              {word}
+            </span>{' '}
+          </>
+        ))
+      }
+    </p>
+  </div>
+</section>
+
+<style>
+  .manifesto {
+    padding-block: var(--m-section);
+    background: var(--m-ink);
+    color: var(--m-bg);
+  }
+
+  .text {
+    max-width: 22ch;
+    font-size: clamp(2rem, 9vw, 4.75rem);
+    font-weight: 400;
+    line-height: 1.08;
+    letter-spacing: -0.045em;
+    text-wrap: balance;
+  }
+
+  .is-accent {
+    font-style: italic;
+    font-weight: 300;
+    color: var(--m-accent);
+  }
+
+  /* Le parole si accendono una dopo l'altra mentre la sezione attraversa lo schermo. */
+  @supports (animation-timeline: view()) {
+    @media (prefers-reduced-motion: no-preference) {
+      .manifesto {
+        view-timeline-name: --manifesto;
+      }
+
+      .word {
+        animation: light linear both;
+        animation-timeline: --manifesto;
+        animation-range: entry calc(20% + var(--i) * 2.5%) cover calc(30% + var(--i) * 2.5%);
+      }
+    }
+  }
+
+  @keyframes light {
+    from {
+      opacity: 0.18;
+    }
+  }
+</style>

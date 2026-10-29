@@ -1,0 +1,404 @@
+---
+import type { EditorialeContent } from '@/data/editoriale';
+import { pad } from '@/utils/format';
+
+interface Props {
+  name: string;
+  masthead: EditorialeContent['masthead'];
+  nav: EditorialeContent['nav'];
+}
+
+const { name, masthead, nav } = Astro.props;
+const formatDate = (date: Date) =>
+  date.toLocaleDateString('it-IT', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric', timeZone: 'Europe/Rome' });
+---
+
+<!-- Barra di lettura: avanza con lo scroll della pagina (solo CSS). -->
+<div class="progress" aria-hidden="true"></div>
+
+<header class="masthead">
+  <div class="e-wrap">
+    <div class="strip">
+      <span>{masthead.issue}</span>
+      <time class="date" data-today>{formatDate(new Date())}</time>
+      <span class="weather">{masthead.weather}</span>
+    </div>
+
+    <p class="nameplate">
+      <a href="#contenuto">{name}</a>
+    </p>
+
+    <div class="under">
+      <span>{masthead.edition}</span>
+      <span class="motto">— {masthead.motto} —</span>
+      <span>{masthead.price}</span>
+    </div>
+  </div>
+</header>
+
+<nav class="bar" aria-label="Sezioni">
+  <div class="e-wrap bar-inner">
+    <button class="index-btn" type="button" popovertarget="e-index">
+      <span class="burger" aria-hidden="true"><span></span><span></span><span></span></span>
+      Sommario
+    </button>
+    <a class="mini" href="#contenuto" aria-hidden="true" tabindex="-1">{name}</a>
+    <ul role="list" class="links">
+      {nav.map((link) => <li><a href={link.href}>{link.label}</a></li>)}
+    </ul>
+    <a class="book" href="#indirizzo">Prenota</a>
+  </div>
+</nav>
+
+<!-- Sommario a tutta pagina, come l'indice di un quotidiano. -->
+<div id="e-index" class="index" popover>
+  <div class="e-wrap index-inner">
+    <div class="index-top">
+      <span class="e-kicker">In questo numero</span>
+      <button type="button" class="index-close" popovertarget="e-index" popovertargetaction="hide">Chiudi ✕</button>
+    </div>
+    <p class="index-title">Sommario</p>
+    <ol role="list" class="index-list">
+      {
+        nav.map((link, i) => (
+          <li>
+            <a href={link.href} data-close-index>
+              <span class="index-name">{link.label}</span>
+              <span class="index-leader" aria-hidden="true" />
+              <span class="index-page">p. {pad(i + 1)}</span>
+            </a>
+          </li>
+        ))
+      }
+    </ol>
+    <p class="index-foot">{masthead.issue} · {masthead.motto}</p>
+  </div>
+</div>
+
+<script>
+  document.querySelectorAll<HTMLTimeElement>('[data-today]').forEach((el) => {
+    const now = new Date();
+    el.dateTime = now.toISOString().slice(0, 10);
+    el.textContent = now.toLocaleDateString('it-IT', {
+      weekday: 'long',
+      day: 'numeric',
+      month: 'long',
+      year: 'numeric',
+      timeZone: 'Europe/Rome',
+    });
+  });
+
+  const index = document.getElementById('e-index');
+  index?.querySelectorAll('[data-close-index]').forEach((link) => {
+    link.addEventListener('click', () => index.hidePopover?.());
+  });
+</script>
+
+<style>
+  .progress {
+    position: fixed;
+    inset: 0 0 auto;
+    z-index: 30;
+    height: 3px;
+    background: var(--e-red);
+    transform-origin: left;
+    transform: scaleX(0);
+  }
+
+  @supports (animation-timeline: scroll()) {
+    .progress {
+      animation: progress linear both;
+      animation-timeline: scroll(root);
+    }
+  }
+
+  @keyframes progress {
+    to {
+      transform: scaleX(1);
+    }
+  }
+
+  .masthead {
+    padding-top: 0.75rem;
+  }
+
+  .strip,
+  .under {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 0.75rem;
+    font-family: var(--e-mono);
+    font-size: 0.65rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+
+  .strip {
+    padding-bottom: 0.55rem;
+    border-bottom: 1px solid var(--e-rule);
+  }
+
+  .date {
+    text-align: right;
+  }
+
+  .weather,
+  .under > span:not(.motto) {
+    display: none;
+  }
+
+  .nameplate {
+    padding-block: 0.85rem 0.35rem;
+    text-align: center;
+    font-family: var(--e-display);
+    font-size: clamp(2.4rem, 12.4vw, 9.5rem);
+    font-weight: 900;
+    line-height: 0.9;
+    letter-spacing: -0.035em;
+    white-space: nowrap;
+  }
+
+  .nameplate a {
+    text-decoration: none;
+  }
+
+  .under {
+    justify-content: center;
+    padding-bottom: 0.75rem;
+  }
+
+  .motto {
+    font-family: var(--e-serif);
+    font-size: 0.95rem;
+    font-style: italic;
+    text-transform: none;
+    letter-spacing: 0;
+    color: var(--e-muted);
+  }
+
+  /* Barra delle sezioni, fissa in alto durante la lettura. */
+  .bar {
+    position: sticky;
+    top: 0;
+    z-index: 20;
+    background: var(--e-paper);
+    border-top: 3px double var(--e-rule);
+    border-bottom: 1px solid var(--e-rule);
+  }
+
+  .bar-inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    height: 3rem;
+  }
+
+  .index-btn,
+  .book {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    height: 2.1rem;
+    padding: 0;
+    border: 0;
+    background: none;
+    font-family: var(--e-mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    text-decoration: none;
+  }
+
+  .burger {
+    display: grid;
+    gap: 3px;
+  }
+
+  .burger span {
+    display: block;
+    width: 14px;
+    height: 1.5px;
+    background: currentColor;
+  }
+
+  .mini {
+    font-family: var(--e-display);
+    font-size: 1.05rem;
+    font-weight: 900;
+    text-decoration: none;
+  }
+
+  /* La mini testata compare solo dopo che quella grande è uscita dallo schermo. */
+  @supports (animation-timeline: scroll()) {
+    .mini {
+      animation: mini-in linear both;
+      animation-timeline: scroll(root);
+      animation-range: 0 220px;
+    }
+  }
+
+  @keyframes mini-in {
+    0%,
+    60% {
+      opacity: 0;
+      transform: translateY(0.4rem);
+    }
+  }
+
+  .book {
+    padding-inline: 0.8rem;
+    background: var(--e-red);
+    color: var(--e-paper);
+  }
+
+  .links {
+    display: none;
+  }
+
+  .links a {
+    font-family: var(--e-mono);
+    font-size: 0.7rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    text-decoration: none;
+  }
+
+  .links a:hover {
+    color: var(--e-red);
+  }
+
+  /* Sommario */
+  .index {
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    max-width: none;
+    max-height: none;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    background: var(--e-paper);
+    color: var(--e-ink);
+    font-family: var(--e-serif);
+    clip-path: inset(0 0 100% 0);
+    transition:
+      clip-path 0.45s cubic-bezier(0.7, 0, 0.2, 1),
+      overlay 0.45s allow-discrete,
+      display 0.45s allow-discrete;
+  }
+
+  .index:popover-open {
+    clip-path: inset(0);
+  }
+
+  @starting-style {
+    .index:popover-open {
+      clip-path: inset(0 0 100% 0);
+    }
+  }
+
+  .index-inner {
+    display: flex;
+    flex-direction: column;
+    min-height: 100%;
+    padding-block: 1rem calc(1.25rem + env(safe-area-inset-bottom));
+  }
+
+  .index-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid var(--e-rule);
+  }
+
+  .index-close {
+    border: 0;
+    background: none;
+    font-family: var(--e-mono);
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+
+  .index-title {
+    margin-top: 1.5rem;
+    font-family: var(--e-display);
+    font-size: clamp(3rem, 16vw, 6rem);
+    font-weight: 900;
+    font-style: italic;
+    line-height: 1;
+  }
+
+  .index-list {
+    margin-top: 1.5rem;
+    border-top: 3px double var(--e-rule);
+  }
+
+  .index-list a {
+    display: flex;
+    align-items: baseline;
+    gap: 0.5rem;
+    padding-block: 0.85rem;
+    border-bottom: 1px solid var(--e-hair);
+    text-decoration: none;
+  }
+
+  .index-name {
+    font-family: var(--e-display);
+    font-size: 1.5rem;
+    font-weight: 700;
+  }
+
+  .index-leader {
+    flex: 1;
+    border-bottom: 1.5px dotted var(--e-ink);
+  }
+
+  .index-page {
+    font-family: var(--e-mono);
+    font-size: 0.8rem;
+    color: var(--e-red);
+  }
+
+  .index-foot {
+    margin-top: auto;
+    padding-top: 2rem;
+    font-family: var(--e-mono);
+    font-size: 0.65rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--e-muted);
+  }
+
+  @media (min-width: 48rem) {
+    .weather,
+    .under > span:not(.motto) {
+      display: inline;
+    }
+
+    .under {
+      justify-content: space-between;
+    }
+
+    .date {
+      text-align: center;
+    }
+  }
+
+  @media (min-width: 64rem) {
+    .index-btn,
+    .mini {
+      display: none;
+    }
+
+    .links {
+      display: flex;
+      gap: 1.75rem;
+      margin-right: auto;
+    }
+  }
+</style>

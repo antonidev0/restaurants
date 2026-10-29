@@ -1,0 +1,106 @@
+---
+import type { Contact } from '@/types/restaurant';
+import type { EditorialeContent } from '@/data/editoriale';
+
+interface Props {
+  name: string;
+  issue: string;
+  contact: Contact;
+  credits: EditorialeContent['colophon'];
+}
+
+const { name, issue, contact, credits } = Astro.props;
+const year = new Date().getFullYear();
+---
+
+<footer class="colophon">
+  <div class="e-wrap">
+    <p class="name">{name}</p>
+
+    <dl class="credits">
+      {
+        credits.map((c) => (
+          <div>
+            <dt>{c.label}</dt>
+            <dd>{c.value}</dd>
+          </div>
+        ))
+      }
+    </dl>
+
+    <p class="meta">
+      <span>{issue} · Stampato su tovaglie a quadri · © {year}</span>
+      {
+        contact.instagram && (
+          <a href={`https://instagram.com/${contact.instagram}`} rel="noopener noreferrer" target="_blank">
+            @{contact.instagram}
+          </a>
+        )
+      }
+      <a href="#contenuto">Torna alla prima pagina ↑</a>
+    </p>
+  </div>
+</footer>
+
+<style>
+  .colophon {
+    padding-block: 2.5rem 2rem;
+    background: var(--e-ink);
+    color: var(--e-paper);
+  }
+
+  .name {
+    padding-bottom: 1rem;
+    border-bottom: 3px double rgb(242 237 226 / 0.5);
+    font-family: var(--e-display);
+    font-size: clamp(2.4rem, 12vw, 6rem);
+    font-weight: 900;
+    line-height: 0.95;
+    letter-spacing: -0.03em;
+    text-align: center;
+    white-space: nowrap;
+  }
+
+  .credits {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem 1.5rem;
+    padding-block: 1.5rem;
+    border-bottom: 1px solid rgb(242 237 226 / 0.2);
+  }
+
+  dt {
+    font-family: var(--e-mono);
+    font-size: 0.62rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    opacity: 0.6;
+  }
+
+  dd {
+    font-size: 0.95rem;
+  }
+
+  .meta {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 0.75rem 1.5rem;
+    padding-top: 1.25rem;
+    font-family: var(--e-mono);
+    font-size: 0.68rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    opacity: 0.8;
+  }
+
+  .meta a {
+    text-underline-offset: 3px;
+  }
+
+  @media (min-width: 48rem) {
+    .credits {
+      grid-template-columns: repeat(4, 1fr);
+    }
+  }
+</style>

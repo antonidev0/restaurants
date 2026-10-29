@@ -1,0 +1,71 @@
+.theme-minimalista {
+  --m-bg: #f4f2ee;
+  --m-ink: #141414;
+  --m-muted: #6f6c66;
+  --m-line: rgb(20 20 20 / 0.12);
+  --m-accent: #b8432b;
+
+  --m-font: 'Inter Variable', system-ui, -apple-system, sans-serif;
+
+  --m-gutter: 1.25rem;
+  --m-max: 72rem;
+  --m-section: 5rem;
+
+  background: var(--m-bg);
+  color: var(--m-ink);
+  font-family: var(--m-font);
+  font-size: 1rem;
+  font-feature-settings: 'ss01', 'cv11';
+}
+
+@media (min-width: 48rem) {
+  .theme-minimalista {
+    --m-gutter: 2.5rem;
+    --m-section: 8rem;
+  }
+}
+
+.theme-minimalista ::selection {
+  background: var(--m-ink);
+  color: var(--m-bg);
+}
+
+.theme-minimalista :focus-visible {
+  outline: 1px solid var(--m-ink);
+  outline-offset: 4px;
+}
+
+/* Contenitore e titoletti di sezione riutilizzati dai componenti. */
+.theme-minimalista .m-wrap {
+  width: 100%;
+  max-width: var(--m-max);
+  margin-inline: auto;
+  padding-inline: var(--m-gutter);
+}
+
+.theme-minimalista .m-label {
+  display: block;
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--m-muted);
+}
+
+/* Comparsa progressiva legata allo scroll, solo dove supportata e senza preferenze contrarie. */
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .theme-minimalista .m-reveal {
+      animation: m-reveal linear both;
+      animation-timeline: view();
+      animation-range: entry 0% entry 60%;
+    }
+  }
+}
+
+@keyframes m-reveal {
+  from {
+    opacity: 0;
+    transform: translateY(1.5rem);
+  }
+}

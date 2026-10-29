@@ -1,0 +1,199 @@
+---
+import type { ListinoSection } from '@/data/editoriale';
+import { formatPrice } from '@/utils/format';
+
+interface Props {
+  sections: ListinoSection[];
+}
+
+const { sections } = Astro.props;
+
+/** Indicatore in stile borsa: rialzo, ribasso o invariato rispetto al numero precedente. */
+const trendOf = (trend = 0) =>
+  trend > 0
+    ? { symbol: '▲', label: `in rialzo di ${formatPrice(trend)}`, className: 'up' }
+    : trend < 0
+      ? { symbol: '▼', label: `in ribasso di ${formatPrice(-trend)}`, className: 'down' }
+      : { symbol: '=', label: 'invariato', className: 'flat' };
+---
+
+<section id="listino" class="listino" aria-labelledby="listino-title">
+  <div class="e-wrap">
+    <div class="e-section-head">
+      <span>Economia della tavola</span>
+      <span>Pagina 4</span>
+    </div>
+
+    <h2 id="listino-title" class="title">Il listino di oggi</h2>
+    <p class="note">Prezzi in euro, pane e coperto compresi. Le quotazioni dei carciofi possono variare.</p>
+    <p class="legend" aria-hidden="true"><span class="up">▲ rialzo</span><span class="down">▼ ribasso</span><span class="flat">= invariato</span></p>
+
+    <div class="columns">
+      {
+        sections.map((section) => (
+          <div class="section">
+            <h3 class="section-title">{section.title}</h3>
+            <ul role="list">
+              {section.dishes.map((dish) => {
+                const trend = trendOf(dish.trend);
+                return (
+                <li class="dish">
+                  <p class="line">
+                    <span class="name">{dish.name}</span>
+                    {dish.tags?.map((tag) => <span class="tag">{tag}</span>)}
+                    <span class="leader" aria-hidden="true" />
+                    <span class="price">{formatPrice(dish.price)}</span>
+                    <span class:list={['trend', trend.className]} title={trend.label}>
+                      <span aria-hidden="true">{trend.symbol}</span>
+                      <span class="visually-hidden">{trend.label}</span>
+                    </span>
+                  </p>
+                  <p class="desc">{dish.description}</p>
+                </li>
+                );
+              })}
+            </ul>
+          </div>
+        ))
+      }
+    </div>
+  </div>
+</section>
+
+<style>
+  .listino {
+    padding-block: 2rem 3.5rem;
+  }
+
+  .title {
+    margin-top: 1.75rem;
+    font-family: var(--e-display);
+    font-size: clamp(2.4rem, 11vw, 5rem);
+    font-weight: 900;
+    line-height: 0.95;
+    letter-spacing: -0.02em;
+  }
+
+  .note {
+    margin-top: 0.75rem;
+    font-style: italic;
+    color: var(--e-muted);
+    max-width: 40ch;
+  }
+
+  .columns {
+    display: grid;
+    gap: 2rem;
+    margin-top: 2rem;
+  }
+
+  .section-title {
+    padding: 0.35rem 0.6rem;
+    background: var(--e-ink);
+    color: var(--e-paper);
+    font-family: var(--e-mono);
+    font-size: 0.75rem;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+
+  .dish {
+    padding-block: 0.85rem;
+    border-bottom: 1px solid var(--e-hair);
+  }
+
+  .line {
+    display: flex;
+    align-items: baseline;
+    gap: 0.4rem;
+  }
+
+  .name {
+    font-family: var(--e-display);
+    font-size: 1.25rem;
+    font-weight: 700;
+  }
+
+  .tag {
+    padding: 0.05rem 0.35rem;
+    border: 1px solid var(--e-red);
+    color: var(--e-red);
+    font-family: var(--e-mono);
+    font-size: 0.6rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+
+  /* Puntini di guida tra nome e prezzo, come nelle quotazioni di borsa. */
+  .leader {
+    flex: 1;
+    min-width: 1rem;
+    border-bottom: 1.5px dotted var(--e-ink);
+    transform: translateY(-0.25em);
+  }
+
+  .price {
+    font-family: var(--e-mono);
+    font-size: 0.95rem;
+    font-weight: 500;
+  }
+
+  .trend {
+    width: 1rem;
+    font-family: var(--e-mono);
+    font-size: 0.7rem;
+    text-align: right;
+  }
+
+  .up {
+    color: #2f7d4f;
+  }
+
+  .down {
+    color: var(--e-red);
+  }
+
+  .flat {
+    color: var(--e-muted);
+  }
+
+  .legend {
+    display: flex;
+    gap: 1rem;
+    margin-top: 0.75rem;
+    font-family: var(--e-mono);
+    font-size: 0.68rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+
+  .desc {
+    margin-top: 0.15rem;
+    font-size: 0.9rem;
+    color: var(--e-muted);
+  }
+
+  @media (min-width: 48rem) {
+    .columns {
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0;
+    }
+
+    .section {
+      padding-inline: 1.25rem;
+    }
+
+    .section:first-child {
+      padding-left: 0;
+    }
+
+    .section:last-child {
+      padding-right: 0;
+    }
+
+    .section + .section {
+      border-left: 1px solid var(--e-hair);
+    }
+  }
+</style>

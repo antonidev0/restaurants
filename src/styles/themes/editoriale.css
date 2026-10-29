@@ -1,0 +1,67 @@
+.theme-editoriale {
+  --e-paper: #f2ede2;
+  --e-ink: #1b1a17;
+  --e-muted: #5e5a52;
+  --e-red: #c0272d;
+  --e-rule: #1b1a17;
+  --e-hair: rgb(27 26 23 / 0.2);
+
+  --e-display: 'Playfair Display Variable', 'Times New Roman', serif;
+  --e-serif: 'Fraunces Variable', Georgia, serif;
+  --e-mono: 'IBM Plex Mono', ui-monospace, monospace;
+
+  --e-gutter: 1rem;
+  --e-max: 80rem;
+
+  background: var(--e-paper);
+  color: var(--e-ink);
+  font-family: var(--e-serif);
+  font-optical-sizing: auto;
+}
+
+@media (min-width: 48rem) {
+  .theme-editoriale {
+    --e-gutter: 2rem;
+  }
+}
+
+.theme-editoriale ::selection {
+  background: var(--e-red);
+  color: var(--e-paper);
+}
+
+.theme-editoriale :focus-visible {
+  outline: 2px solid var(--e-red);
+  outline-offset: 2px;
+}
+
+.theme-editoriale .e-wrap {
+  width: 100%;
+  max-width: var(--e-max);
+  margin-inline: auto;
+  padding-inline: var(--e-gutter);
+}
+
+/* Etichetta di sezione in stile giornale: testo mono tra due filetti. */
+.theme-editoriale .e-kicker {
+  font-family: var(--e-mono);
+  font-size: 0.72rem;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--e-red);
+}
+
+.theme-editoriale .e-section-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  padding-block: 0.6rem;
+  border-top: 3px double var(--e-rule);
+  border-bottom: 1px solid var(--e-rule);
+  font-family: var(--e-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}

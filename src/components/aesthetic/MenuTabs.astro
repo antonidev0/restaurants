@@ -1,0 +1,250 @@
+---
+import type { Moment } from '@/data/aesthetic';
+import { formatPrice } from '@/utils/format';
+import Illustration from './Illustration.astro';
+
+interface Props {
+  moments: Moment[];
+}
+
+const { moments } = Astro.props;
+---
+
+<section id="momenti" class="moments" aria-labelledby="momenti-title">
+  <div class="a-wrap">
+    <header class="head">
+      <p class="a-eyebrow">Il menu</p>
+      <h2 id="momenti-title" class="a-title">Tre momenti, <em>un giardino</em></h2>
+    </header>
+
+    <!-- Senza JavaScript i tre pannelli restano tutti visibili, uno dopo l'altro. -->
+    <div class="tabs" data-tabs>
+      <div class="tablist" role="tablist" aria-label="Momenti della giornata" hidden data-tablist>
+        {
+          moments.map((m, i) => (
+            <button
+              class:list={['tab', `mood-${m.mood}`]}
+              type="button"
+              role="tab"
+              id={`tab-${m.id}`}
+              aria-controls={`panel-${m.id}`}
+              aria-selected={i === 0 ? 'true' : 'false'}
+              tabindex={i === 0 ? 0 : -1}
+            >
+              {m.title}
+            </button>
+          ))
+        }
+      </div>
+
+      {
+        moments.map((m) => (
+          <div class:list={['panel', `mood-${m.mood}`]} role="tabpanel" id={`panel-${m.id}`} aria-labelledby={`tab-${m.id}`} tabindex="0">
+            <div class="panel-head">
+              <Illustration mood={m.mood} class="panel-icon" />
+              <div>
+                <p class="time">{m.time}</p>
+                <h3 class="panel-title">{m.title}</h3>
+                <p class="panel-text">{m.text}</p>
+              </div>
+            </div>
+            <ul role="list" class="dishes">
+              {m.dishes.map((dish) => (
+                <li class="dish">
+                  <p class="dish-line">
+                    <span class="dish-name">{dish.name}</span>
+                    <span class="dots" aria-hidden="true" />
+                    <span class="dish-price">{formatPrice(dish.price)}</span>
+                  </p>
+                  <p class="dish-desc">{dish.description}</p>
+                </li>
+              ))}
+            </ul>
+          </div>
+        ))
+      }
+    </div>
+  </div>
+</section>
+
+<script>
+  document.querySelectorAll<HTMLElement>('[data-tabs]').forEach((root) => {
+    const tablist = root.querySelector<HTMLElement>('[data-tablist]');
+    const tabs = [...root.querySelectorAll<HTMLButtonElement>('[role="tab"]')];
+    const panels = [...root.querySelectorAll<HTMLElement>('[role="tabpanel"]')];
+    if (!tablist || tabs.length === 0) return;
+
+    const select = (index: number, focus = false) => {
+      tabs.forEach((tab, i) => {
+        const active = i === index;
+        tab.setAttribute('aria-selected', String(active));
+        tab.tabIndex = active ? 0 : -1;
+        panels[i]?.toggleAttribute('hidden', !active);
+      });
+      if (focus) tabs[index]?.focus();
+    };
+
+    tablist.hidden = false;
+    select(0);
+
+    tabs.forEach((tab, i) => {
+      tab.addEventListener('click', () => select(i));
+      tab.addEventListener('keydown', (event) => {
+        const keys: Record<string, number> = { ArrowRight: 1, ArrowLeft: -1 };
+        const step = keys[event.key];
+        if (step === undefined) return;
+        event.preventDefault();
+        select((i + step + tabs.length) % tabs.length, true);
+      });
+    });
+  });
+</script>
+
+<style>
+  .moments {
+    padding-block: 3rem 4rem;
+  }
+
+  .tabs {
+    display: grid;
+    gap: 1rem;
+    margin-top: 2rem;
+  }
+
+  .tablist {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.3rem;
+    padding: 0.3rem;
+    border-radius: 999px;
+    background: var(--a-paper);
+  }
+
+  .tablist[hidden] {
+    display: none;
+  }
+
+  .tab {
+    min-height: 2.9rem;
+    border: 0;
+    border-radius: 999px;
+    background: transparent;
+    font-family: var(--a-serif);
+    font-size: 1.15rem;
+    font-style: italic;
+    transition: background 0.3s ease;
+  }
+
+  .tab[aria-selected='true'] {
+    background: var(--mood);
+    box-shadow: 0 6px 14px -10px rgb(74 53 48 / 0.6);
+  }
+
+  .panel {
+    padding: 1.5rem 1.25rem;
+    border-radius: var(--a-radius);
+    background: linear-gradient(180deg, var(--mood), var(--a-paper) 75%);
+    animation: panel-in 0.45s cubic-bezier(0.2, 0.7, 0.2, 1);
+  }
+
+  .panel[hidden] {
+    display: none;
+  }
+
+  @keyframes panel-in {
+    from {
+      opacity: 0;
+      transform: translateY(0.75rem);
+    }
+  }
+
+  .panel-head {
+    display: grid;
+    grid-template-columns: 4.75rem 1fr;
+    gap: 1rem;
+    align-items: center;
+  }
+
+  .panel :global(.panel-icon) {
+    width: 4.75rem;
+    height: 4.75rem;
+    padding: 0.4rem;
+    border-radius: 50%;
+    background: var(--a-paper);
+  }
+
+  .time {
+    font-size: 0.75rem;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+  }
+
+  .panel-title {
+    font-family: var(--a-serif);
+    font-size: 1.9rem;
+    font-style: italic;
+    font-weight: 500;
+    line-height: 1.05;
+  }
+
+  .panel-text {
+    font-size: 0.9rem;
+    opacity: 0.8;
+  }
+
+  .dishes {
+    margin-top: 1.5rem;
+  }
+
+  .dish {
+    padding-block: 0.9rem;
+    border-top: 1px dashed rgb(74 53 48 / 0.2);
+  }
+
+  .dish-line {
+    display: flex;
+    align-items: baseline;
+    gap: 0.5rem;
+  }
+
+  .dish-name {
+    font-family: var(--a-serif);
+    font-size: 1.3rem;
+    font-weight: 500;
+    line-height: 1.15;
+  }
+
+  .dots {
+    flex: 1;
+    min-width: 1rem;
+    border-bottom: 2px dotted rgb(74 53 48 / 0.25);
+  }
+
+  .dish-price {
+    font-family: var(--a-display);
+    font-size: 1.2rem;
+    color: var(--a-terracotta);
+    white-space: nowrap;
+  }
+
+  .dish-desc {
+    margin-top: 0.15rem;
+    font-size: 0.875rem;
+    color: var(--a-muted);
+  }
+
+  @media (min-width: 48rem) {
+    .tabs {
+      max-width: 44rem;
+      margin-inline: auto;
+    }
+
+    .head {
+      text-align: center;
+    }
+
+    .panel {
+      padding: 2.5rem;
+    }
+  }
+</style>

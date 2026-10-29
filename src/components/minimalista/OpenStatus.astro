@@ -1,0 +1,63 @@
+---
+import type { ServiceSlot } from '@/data/minimalista';
+import { getOpenStatus } from '@/utils/schedule';
+
+interface Props {
+  schedule: ServiceSlot[];
+}
+
+const { schedule } = Astro.props;
+// Valore calcolato al build come fallback; il client lo aggiorna con l'ora reale.
+const initial = getOpenStatus(schedule);
+---
+
+<p class="status" data-open-status data-schedule={JSON.stringify(schedule)} data-open={String(initial.open)}>
+  <span class="dot" aria-hidden="true"></span>
+  <span data-label>{initial.label}</span>
+</p>
+
+<script>
+  import { getOpenStatus } from '@/utils/schedule';
+
+  const update = () => {
+    document.querySelectorAll<HTMLElement>('[data-open-status]').forEach((el) => {
+      const status = getOpenStatus(JSON.parse(el.dataset.schedule ?? '[]'));
+      el.dataset.open = String(status.open);
+      const label = el.querySelector('[data-label]');
+      if (label) label.textContent = status.label;
+    });
+  };
+
+  update();
+  setInterval(update, 60_000);
+</script>
+
+<style>
+  .status {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.75rem;
+    font-variant-numeric: tabular-nums;
+    color: var(--m-muted);
+  }
+
+  .dot {
+    width: 0.4rem;
+    height: 0.4rem;
+    border-radius: 50%;
+    background: var(--m-muted);
+  }
+
+  .status[data-open='true'] .dot {
+    background: #3f8f5a;
+    box-shadow: 0 0 0 0 rgb(63 143 90 / 0.5);
+    animation: pulse 2.4s ease-out infinite;
+  }
+
+  @keyframes pulse {
+    to {
+      box-shadow: 0 0 0 0.45rem rgb(63 143 90 / 0);
+    }
+  }
+</style>

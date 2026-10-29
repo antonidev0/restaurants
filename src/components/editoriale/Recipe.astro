@@ -1,0 +1,170 @@
+---
+import type { EditorialeContent } from '@/data/editoriale';
+
+interface Props {
+  recipe: EditorialeContent['recipe'];
+}
+
+const { recipe } = Astro.props;
+---
+
+<section id="ricetta" class="recipe" aria-labelledby="ricetta-title">
+  <div class="e-wrap">
+    <div class="e-section-head">
+      <span>La ricetta</span>
+      <span>Pagina 3</span>
+    </div>
+
+    <div class="layout">
+      <header class="head">
+        <h2 id="ricetta-title" class="title">{recipe.title}</h2>
+        <ul role="list" class="meta">
+          <li><span>Dosi</span>{recipe.serves}</li>
+          <li><span>Tempo</span>{recipe.time}</li>
+          <li><span>Difficoltà</span>●●○</li>
+        </ul>
+      </header>
+
+      <div class="ingredients">
+        <h3 class="box-title">Ingredienti</h3>
+        <ul role="list">
+          {recipe.ingredients.map((item) => <li>{item}</li>)}
+        </ul>
+      </div>
+
+      <ol role="list" class="steps">
+        {recipe.steps.map((step) => <li>{step}</li>)}
+      </ol>
+
+      <p class="tip"><strong>Il trucco di Marta.</strong> {recipe.tip}</p>
+    </div>
+  </div>
+</section>
+
+<style>
+  .recipe {
+    padding-block: 2rem 3.5rem;
+  }
+
+  .layout {
+    display: grid;
+    gap: 1.75rem;
+    margin-top: 1.75rem;
+  }
+
+  .title {
+    font-family: var(--e-display);
+    font-size: clamp(2.2rem, 10vw, 4.25rem);
+    font-weight: 900;
+    line-height: 0.98;
+    letter-spacing: -0.02em;
+  }
+
+  .meta {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    margin-top: 1.25rem;
+    border-block: 1px solid var(--e-rule);
+  }
+
+  .meta li {
+    display: grid;
+    gap: 0.15rem;
+    padding: 0.6rem 0.5rem;
+    font-family: var(--e-display);
+    font-weight: 700;
+  }
+
+  .meta li + li {
+    border-left: 1px solid var(--e-hair);
+  }
+
+  .meta span {
+    font-family: var(--e-mono);
+    font-size: 0.6rem;
+    font-weight: 400;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--e-muted);
+  }
+
+  .ingredients {
+    padding: 1.1rem 1.25rem;
+    background: var(--e-ink);
+    color: var(--e-paper);
+  }
+
+  .box-title {
+    margin-bottom: 0.6rem;
+    font-family: var(--e-mono);
+    font-size: 0.72rem;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: #ff8a8f;
+  }
+
+  .ingredients li {
+    padding-block: 0.4rem;
+    border-bottom: 1px dashed rgb(242 237 226 / 0.25);
+  }
+
+  .ingredients li:last-child {
+    border-bottom: 0;
+  }
+
+  .steps {
+    counter-reset: step;
+    display: grid;
+    gap: 1.1rem;
+  }
+
+  .steps li {
+    counter-increment: step;
+    display: grid;
+    grid-template-columns: 2.75rem 1fr;
+    gap: 0.75rem;
+    line-height: 1.55;
+  }
+
+  .steps li::before {
+    content: counter(step);
+    font-family: var(--e-display);
+    font-size: 2.75rem;
+    font-weight: 900;
+    font-style: italic;
+    line-height: 0.85;
+    color: var(--e-red);
+  }
+
+  .tip {
+    padding: 1rem 1.1rem;
+    border-left: 4px solid var(--e-red);
+    background: rgb(192 39 45 / 0.06);
+    font-style: italic;
+  }
+
+  .tip strong {
+    font-style: normal;
+  }
+
+  @media (min-width: 48rem) {
+    .layout {
+      grid-template-columns: 1fr 1.6fr;
+      gap: 2rem 3rem;
+    }
+
+    .head {
+      grid-column: 1 / -1;
+    }
+
+    .meta {
+      max-width: 30rem;
+    }
+
+    .ingredients {
+      grid-row: span 2;
+      align-self: start;
+    }
+  }
+</style>
