@@ -1,23 +1,32 @@
 ---
-import type { MenuSection } from '@/types/restaurant';
+import type { ListinoSection } from '@/data/editoriale';
 import { formatPrice } from '@/utils/format';
 
 interface Props {
-  sections: MenuSection[];
+  sections: ListinoSection[];
 }
 
 const { sections } = Astro.props;
+
+/** Indicatore in stile borsa: rialzo, ribasso o invariato rispetto al numero precedente. */
+const trendOf = (trend = 0) =>
+  trend > 0
+    ? { symbol: '▲', label: `in rialzo di ${formatPrice(trend)}`, className: 'up' }
+    : trend < 0
+      ? { symbol: '▼', label: `in ribasso di ${formatPrice(-trend)}`, className: 'down' }
+      : { symbol: '=', label: 'invariato', className: 'flat' };
 ---
 
 <section id="listino" class="listino" aria-labelledby="listino-title">
   <div class="e-wrap">
     <div class="e-section-head">
       <span>Economia della tavola</span>
-      <span>Pagina 3</span>
+      <span>Pagina 4</span>
     </div>
 
     <h2 id="listino-title" class="title">Il listino di oggi</h2>
     <p class="note">Prezzi in euro, pane e coperto compresi. Le quotazioni dei carciofi possono variare.</p>
+    <p class="legend" aria-hidden="true"><span class="up">▲ rialzo</span><span class="down">▼ ribasso</span><span class="flat">= invariato</span></p>
 
     <div class="columns">
       {
@@ -25,17 +34,24 @@ const { sections } = Astro.props;
           <div class="section">
             <h3 class="section-title">{section.title}</h3>
             <ul role="list">
-              {section.dishes.map((dish) => (
+              {section.dishes.map((dish) => {
+                const trend = trendOf(dish.trend);
+                return (
                 <li class="dish">
                   <p class="line">
                     <span class="name">{dish.name}</span>
                     {dish.tags?.map((tag) => <span class="tag">{tag}</span>)}
                     <span class="leader" aria-hidden="true" />
                     <span class="price">{formatPrice(dish.price)}</span>
+                    <span class:list={['trend', trend.className]} title={trend.label}>
+                      <span aria-hidden="true">{trend.symbol}</span>
+                      <span class="visually-hidden">{trend.label}</span>
+                    </span>
                   </p>
                   <p class="desc">{dish.description}</p>
                 </li>
-              ))}
+                );
+              })}
             </ul>
           </div>
         ))
@@ -121,6 +137,35 @@ const { sections } = Astro.props;
     font-family: var(--e-mono);
     font-size: 0.95rem;
     font-weight: 500;
+  }
+
+  .trend {
+    width: 1rem;
+    font-family: var(--e-mono);
+    font-size: 0.7rem;
+    text-align: right;
+  }
+
+  .up {
+    color: #2f7d4f;
+  }
+
+  .down {
+    color: var(--e-red);
+  }
+
+  .flat {
+    color: var(--e-muted);
+  }
+
+  .legend {
+    display: flex;
+    gap: 1rem;
+    margin-top: 0.75rem;
+    font-family: var(--e-mono);
+    font-size: 0.68rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
   }
 
   .desc {

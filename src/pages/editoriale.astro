@@ -12,11 +12,19 @@ import Masthead from '@/components/editoriale/Masthead.astro';
 import Ticker from '@/components/editoriale/Ticker.astro';
 import CoverStory from '@/components/editoriale/CoverStory.astro';
 import Interview from '@/components/editoriale/Interview.astro';
+import Recipe from '@/components/editoriale/Recipe.astro';
 import Listino from '@/components/editoriale/Listino.astro';
 import Cronache from '@/components/editoriale/Cronache.astro';
+import Agenda from '@/components/editoriale/Agenda.astro';
 import Classified from '@/components/editoriale/Classified.astro';
 import Colophon from '@/components/editoriale/Colophon.astro';
 import { editoriale as content } from '@/data/editoriale';
+
+const teasers = [
+  { label: 'Pagina 3', href: '#ricetta', text: 'La ricetta segreta, spiegata passo per passo' },
+  { label: 'Pagina 4', href: '#listino', text: 'Il listino: carciofi in rialzo, tiramisù in ribasso' },
+  { label: 'Pagina 6', href: '#agenda', text: 'Gricia day, baccalà e cantina aperta' },
+];
 ---
 
 <BaseLayout
@@ -28,11 +36,19 @@ import { editoriale as content } from '@/data/editoriale';
   <Masthead name={content.name} masthead={content.masthead} nav={content.nav} />
   <Ticker items={content.ticker} />
   <main id="contenuto">
-    <CoverStory headline={content.headline} numbers={content.numbers} />
+    <CoverStory headline={content.headline} numbers={content.numbers} teasers={teasers} />
     <Interview feature={content.feature} />
+    <Recipe recipe={content.recipe} />
     <Listino sections={content.menu} />
-    <Cronache briefs={content.briefs} />
-    <Classified name={content.name} description={content.description} hours={content.hours} contact={content.contact} />
+    <Cronache briefs={content.briefs} letters={content.letters} />
+    <Agenda agenda={content.agenda} />
+    <Classified
+      name={content.name}
+      description={content.description}
+      hours={content.hours}
+      contact={content.contact}
+      coupon={content.coupon}
+    />
   </main>
-  <Colophon name={content.name} issue={content.masthead.issue} contact={content.contact} />
+  <Colophon name={content.name} issue={content.masthead.issue} contact={content.contact} credits={content.colophon} />
 </BaseLayout>

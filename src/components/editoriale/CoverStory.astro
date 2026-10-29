@@ -5,17 +5,22 @@ import Engraving from './Engraving.astro';
 interface Props {
   headline: EditorialeContent['headline'];
   numbers: EditorialeContent['numbers'];
+  teasers: { label: string; href: string; text: string }[];
 }
 
-const { headline, numbers } = Astro.props;
+const { headline, numbers, teasers } = Astro.props;
 ---
 
 <section id="prima" class="cover" aria-labelledby="cover-title">
   <div class="e-wrap grid">
     <div class="copy">
-      <p class="e-kicker">{headline.kicker}</p>
+      <p class="e-kicker kicker"><span class="flag">{headline.kicker}</span> Prima pagina</p>
       <h1 id="cover-title" class="title">{headline.title}</h1>
       <p class="standfirst">{headline.standfirst}</p>
+      <p class="byline">
+        <span>{headline.byline}</span>
+        <span>{headline.readingTime}</span>
+      </p>
       <a class="more" href="#intervista">Continua a pagina 2 →</a>
     </div>
 
@@ -34,17 +39,33 @@ const { headline, numbers } = Astro.props;
         ))
       }
     </dl>
+
+    <aside class="teasers" aria-label="Leggi anche">
+      <p class="teasers-title">Leggi anche</p>
+      <ul role="list">
+        {
+          teasers.map((t) => (
+            <li>
+              <a href={t.href}>
+                <span class="e-kicker">{t.label}</span>
+                <span class="teaser-text">{t.text}</span>
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </aside>
   </div>
 </section>
 
 <style>
   .cover {
-    padding-block: 1.75rem 3rem;
+    padding-block: 1.5rem 3rem;
   }
 
   .grid {
     display: grid;
-    gap: 2rem;
+    gap: 1.75rem;
   }
 
   .copy {
@@ -52,12 +73,33 @@ const { headline, numbers } = Astro.props;
     gap: 1rem;
   }
 
+  .kicker {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    color: var(--e-ink);
+  }
+
+  .flag {
+    padding: 0.2rem 0.45rem;
+    background: var(--e-red);
+    color: var(--e-paper);
+  }
+
   .title {
     font-family: var(--e-display);
-    font-size: clamp(2.6rem, 12vw, 6.5rem);
+    font-size: clamp(2.7rem, 12.5vw, 6.75rem);
     font-weight: 800;
-    line-height: 0.95;
-    letter-spacing: -0.025em;
+    line-height: 0.93;
+    letter-spacing: -0.03em;
+    animation: ink 0.9s ease both;
+  }
+
+  @keyframes ink {
+    from {
+      opacity: 0;
+      filter: blur(6px);
+    }
   }
 
   .standfirst {
@@ -70,6 +112,19 @@ const { headline, numbers } = Astro.props;
     font-weight: 600;
   }
 
+  .byline {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    padding-block: 0.6rem;
+    border-block: 1px solid var(--e-hair);
+    font-family: var(--e-mono);
+    font-size: 0.68rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--e-muted);
+  }
+
   .more {
     width: fit-content;
     font-family: var(--e-mono);
@@ -79,7 +134,6 @@ const { headline, numbers } = Astro.props;
   }
 
   .figure {
-    color: var(--e-ink);
     border-block: 1px solid var(--e-rule);
     padding-block: 1rem 0.75rem;
   }
@@ -132,6 +186,43 @@ const { headline, numbers } = Astro.props;
     color: var(--e-muted);
   }
 
+  .teasers-title {
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid var(--e-rule);
+    font-family: var(--e-display);
+    font-size: 1.25rem;
+    font-weight: 900;
+    font-style: italic;
+  }
+
+  .teasers a {
+    display: grid;
+    gap: 0.2rem;
+    padding-block: 0.8rem;
+    border-bottom: 1px solid var(--e-hair);
+    text-decoration: none;
+  }
+
+  .teaser-text {
+    font-family: var(--e-display);
+    font-size: 1.15rem;
+    font-weight: 600;
+    line-height: 1.2;
+  }
+
+  .teasers a:hover .teaser-text {
+    text-decoration: underline;
+    text-decoration-color: var(--e-red);
+  }
+
+  @media (min-width: 48rem) {
+    .teasers ul {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0 1.5rem;
+    }
+  }
+
   @media (min-width: 64rem) {
     .grid {
       grid-template-columns: 7fr 5fr;
@@ -146,10 +237,11 @@ const { headline, numbers } = Astro.props;
 
     .standfirst {
       font-size: 1.35rem;
-      max-width: 34ch;
+      max-width: 36ch;
     }
 
-    .numbers {
+    .numbers,
+    .teasers {
       grid-column: 1 / -1;
     }
   }
