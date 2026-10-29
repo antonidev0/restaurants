@@ -1,120 +1,315 @@
 ---
-import type { NavLink } from '@/types/restaurant';
+import type { Contact, NavLink } from '@/types/restaurant';
+import { toTelHref } from '@/utils/format';
+import Illustration from './Illustration.astro';
 
 interface Props {
   name: string;
   nav: NavLink[];
+  contact: Contact;
 }
 
-const { name, nav } = Astro.props;
+const { name, nav, contact } = Astro.props;
 ---
 
 <header class="header">
   <div class="a-wrap inner">
+    <button class="toggle" type="button" popovertarget="a-menu" aria-label="Apri il menu">
+      <span></span><span></span>
+    </button>
+
     <a class="logo" href="#contenuto">{name}</a>
-    <nav aria-label="Navigazione principale">
-      <ul role="list" class="links">
-        {nav.map((link) => <li><a href={link.href}>{link.label}</a></li>)}
+
+    <nav class="desktop-nav" aria-label="Navigazione principale">
+      <ul role="list">
+        {nav.slice(0, 4).map((link) => <li><a href={link.href}>{link.label}</a></li>)}
       </ul>
     </nav>
-    <a class="cta" href="#visita">Prenota</a>
+
+    <a class="call" href={toTelHref(contact.phone)} aria-label={`Chiama ${contact.phone}`}>
+      <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true">
+        <path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2" />
+      </svg>
+    </a>
+    <a class="a-btn a-btn--dark cta" href="#visita">Prenota</a>
   </div>
 </header>
 
+<!-- Menu mobile: pannello a schermo intero con l'API Popover nativa. -->
+<div id="a-menu" class="sheet" popover>
+  <div class="sheet-inner">
+    <div class="sheet-top">
+      <span class="logo">{name}</span>
+      <button class="close" type="button" popovertarget="a-menu" popovertargetaction="hide" aria-label="Chiudi il menu">✕</button>
+    </div>
+
+    <nav aria-label="Navigazione mobile">
+      <ul role="list" class="sheet-links">
+        {nav.map((link) => <li><a href={link.href} data-close-menu>{link.label}</a></li>)}
+      </ul>
+    </nav>
+
+    <Illustration mood="limone" class="sheet-lemon" />
+
+    <a class="a-btn a-btn--dark sheet-cta" href="#visita" data-close-menu>Prenota un tavolo →</a>
+  </div>
+</div>
+
 <!-- Barra di prenotazione sempre a portata di pollice, solo su mobile. -->
 <a class="bar" href="#visita">
-  <span>Prenota un tavolo al sole</span>
+  <span class="bar-text">
+    <span class="bar-title">Prenota un tavolo al sole</span>
+    <span class="bar-sub">Oggi aperti fino alle 21:00</span>
+  </span>
   <span class="bar-icon" aria-hidden="true">→</span>
 </a>
+
+<script>
+  const menu = document.getElementById('a-menu');
+  menu?.querySelectorAll('[data-close-menu]').forEach((link) => {
+    link.addEventListener('click', () => menu.hidePopover?.());
+  });
+</script>
 
 <style>
   .header {
     position: relative;
     z-index: 5;
-    padding-block: 1.25rem;
+    padding-block: 1rem;
   }
 
   .inner {
-    display: flex;
+    display: grid;
+    grid-template-columns: 2.75rem 1fr 2.75rem;
     align-items: center;
-    justify-content: center;
-    gap: 2rem;
+    gap: 0.5rem;
   }
 
   .logo {
     font-family: var(--a-display);
     font-size: 1.35rem;
+    text-align: center;
     text-decoration: none;
     letter-spacing: 0.02em;
   }
 
-  .links,
+  .toggle,
+  .call,
+  .close {
+    display: grid;
+    place-content: center;
+    width: 2.75rem;
+    height: 2.75rem;
+    border: 0;
+    border-radius: 50%;
+    background: var(--a-paper);
+    color: var(--a-ink);
+    box-shadow: 0 1px 0 rgb(74 53 48 / 0.08);
+  }
+
+  .toggle {
+    gap: 0.3rem;
+  }
+
+  .toggle span {
+    display: block;
+    width: 1.05rem;
+    height: 1.5px;
+    border-radius: 2px;
+    background: currentColor;
+  }
+
+  .toggle span:last-child {
+    width: 0.7rem;
+  }
+
+  .desktop-nav,
   .cta {
     display: none;
   }
 
-  .links a {
-    font-family: var(--a-serif);
-    font-size: 1.15rem;
-    font-style: italic;
-    text-decoration: none;
+  .desktop-nav ul {
+    display: flex;
+    gap: 2rem;
   }
 
-  .links a:hover {
+  .desktop-nav a {
+    font-family: var(--a-serif);
+    font-size: 1.2rem;
+    font-style: italic;
+    text-decoration: none;
+    transition: color 0.2s ease;
+  }
+
+  .desktop-nav a:hover {
     color: var(--a-terracotta);
   }
 
+  /* Pannello mobile */
+  .sheet {
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    max-width: none;
+    max-height: none;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    overflow: hidden;
+    background:
+      radial-gradient(circle at 85% 10%, #fff3c9 0 12%, transparent 40%),
+      linear-gradient(170deg, var(--a-pesca), var(--a-lavanda) 70%, var(--a-salvia));
+    color: var(--a-ink);
+    font-family: var(--a-sans);
+    opacity: 0;
+    transform: scale(1.04);
+    transition:
+      opacity 0.4s ease,
+      transform 0.4s ease,
+      overlay 0.4s allow-discrete,
+      display 0.4s allow-discrete;
+  }
+
+  .sheet:popover-open {
+    opacity: 1;
+    transform: none;
+  }
+
+  @starting-style {
+    .sheet:popover-open {
+      opacity: 0;
+      transform: scale(1.04);
+    }
+  }
+
+  .sheet-inner {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    padding: 1rem 1.25rem calc(1.25rem + env(safe-area-inset-bottom));
+  }
+
+  .sheet-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .sheet-links {
+    display: grid;
+    gap: 0.25rem;
+    margin-top: 3rem;
+  }
+
+  .sheet-links a {
+    font-family: var(--a-serif);
+    font-size: clamp(2.4rem, 11vw, 3.5rem);
+    font-style: italic;
+    line-height: 1.15;
+    text-decoration: none;
+  }
+
+  .sheet-links li {
+    animation: sheet-item 0.5s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+  }
+
+  .sheet-links li:nth-child(2) { animation-delay: 0.05s; }
+  .sheet-links li:nth-child(3) { animation-delay: 0.1s; }
+  .sheet-links li:nth-child(4) { animation-delay: 0.15s; }
+  .sheet-links li:nth-child(5) { animation-delay: 0.2s; }
+
+  @keyframes sheet-item {
+    from {
+      opacity: 0;
+      transform: translateX(-1rem);
+    }
+  }
+
+  .sheet :global(.sheet-lemon) {
+    position: absolute;
+    right: -2rem;
+    bottom: 6rem;
+    width: 11rem;
+    transform: rotate(-20deg);
+    animation: a-float 5s ease-in-out infinite;
+  }
+
+  .sheet-cta {
+    margin-top: auto;
+    width: 100%;
+  }
+
+  /* Barra mobile */
   .bar {
     position: fixed;
-    left: 1rem;
-    right: 1rem;
-    bottom: calc(1rem + env(safe-area-inset-bottom));
+    left: 0.75rem;
+    right: 0.75rem;
+    bottom: calc(0.75rem + env(safe-area-inset-bottom));
     z-index: 40;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 0.5rem 0.5rem 0.5rem 1.5rem;
-    min-height: 3.5rem;
+    padding: 0.45rem 0.45rem 0.45rem 1.4rem;
+    min-height: 3.75rem;
     border-radius: 999px;
     background: var(--a-ink);
     color: var(--a-cream);
     text-decoration: none;
+    box-shadow: 0 16px 34px -14px rgb(74 53 48 / 0.7);
+  }
+
+  .bar-text {
+    display: grid;
+    line-height: 1.2;
+  }
+
+  .bar-title {
     font-weight: 500;
-    box-shadow: 0 12px 30px -12px rgb(74 53 48 / 0.6);
+  }
+
+  .bar-sub {
+    font-size: 0.75rem;
+    opacity: 0.65;
   }
 
   .bar-icon {
     display: grid;
     place-items: center;
-    width: 2.5rem;
-    height: 2.5rem;
+    width: 2.9rem;
+    height: 2.9rem;
     border-radius: 50%;
     background: var(--a-pesca);
     color: var(--a-ink);
+    transition: transform 0.25s ease;
+  }
+
+  .bar:hover .bar-icon {
+    transform: rotate(-45deg);
   }
 
   @media (min-width: 48rem) {
     .inner {
-      justify-content: space-between;
-    }
-
-    .links {
       display: flex;
+      justify-content: space-between;
       gap: 2rem;
     }
 
-    .cta {
-      display: inline-block;
-      padding: 0.6rem 1.4rem;
-      border-radius: 999px;
-      background: var(--a-ink);
-      color: var(--a-cream);
-      text-decoration: none;
-      font-size: 0.875rem;
-    }
-
+    .toggle,
+    .call,
     .bar {
       display: none;
+    }
+
+    .desktop-nav,
+    .cta {
+      display: flex;
+    }
+
+    .cta {
+      min-height: 2.75rem;
+      font-size: 0.9rem;
     }
   }
 </style>

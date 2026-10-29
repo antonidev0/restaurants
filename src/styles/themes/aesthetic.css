@@ -20,11 +20,10 @@
   --a-arch: 999px 999px var(--a-radius) var(--a-radius);
 
   position: relative;
+  overflow-x: clip;
   background: var(--a-cream);
   color: var(--a-ink);
   font-family: var(--a-sans);
-  /* Spazio per la barra di prenotazione fissa su mobile. */
-  padding-bottom: calc(5.5rem + env(safe-area-inset-bottom));
 }
 
 /* Grana leggera, tipo pellicola, sopra tutta la pagina. */
@@ -42,7 +41,6 @@
 @media (min-width: 48rem) {
   .theme-aesthetic {
     --a-gutter: 2.5rem;
-    padding-bottom: 0;
   }
 }
 
@@ -90,3 +88,54 @@
 .theme-aesthetic .mood-salvia { --mood: var(--a-salvia); --mood-2: #a9c29a; }
 .theme-aesthetic .mood-limone { --mood: var(--a-limone); --mood-2: #f1cf63; }
 .theme-aesthetic .mood-lavanda { --mood: var(--a-lavanda); --mood-2: #bba8d6; }
+
+/* Comparsa morbida legata allo scroll, dove supportata. */
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .theme-aesthetic .a-reveal {
+      animation: a-reveal linear both;
+      animation-timeline: view();
+      animation-range: entry 0% entry 70%;
+    }
+  }
+}
+
+@keyframes a-reveal {
+  from {
+    opacity: 0;
+    transform: translateY(2rem) scale(0.97);
+  }
+}
+
+@keyframes a-float {
+  50% {
+    translate: 0 -0.6rem;
+  }
+}
+
+/* Bottone a pillola condiviso. */
+.theme-aesthetic .a-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  min-height: 3.25rem;
+  padding-inline: 1.6rem;
+  border-radius: 999px;
+  background: var(--a-paper);
+  color: var(--a-ink);
+  font-weight: 500;
+  text-decoration: none;
+  box-shadow: 0 1px 0 rgb(74 53 48 / 0.08);
+  transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.25s ease;
+}
+
+.theme-aesthetic .a-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 24px -12px rgb(74 53 48 / 0.45);
+}
+
+.theme-aesthetic .a-btn--dark {
+  background: var(--a-ink);
+  color: var(--a-cream);
+}

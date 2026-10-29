@@ -1,0 +1,168 @@
+---
+import type { Review } from '@/data/aesthetic';
+
+interface Props {
+  reviews: Review[];
+}
+
+const { reviews } = Astro.props;
+const moods = ['pesca', 'lavanda', 'salvia', 'limone'];
+---
+
+<section id="recensioni" class="reviews" aria-labelledby="recensioni-title">
+  <div class="a-wrap head">
+    <p class="a-eyebrow">Dicono di noi</p>
+    <h2 id="recensioni-title" class="a-title">Cartoline <em>dai nostri ospiti</em></h2>
+    <p class="rating">
+      <span class="stars" aria-hidden="true">★★★★★</span>
+      <span>4,9 su 5 · oltre 1.200 recensioni</span>
+    </p>
+  </div>
+
+  <ul role="list" class="track">
+    {
+      reviews.map((review, i) => (
+        <li class:list={['card', `mood-${moods[i % moods.length]}`]}>
+          <figure>
+            <span class="stamp" aria-hidden="true">✿</span>
+            <blockquote>
+              <p>“{review.text}”</p>
+            </blockquote>
+            <figcaption>
+              <span class="avatar" aria-hidden="true">{review.author.charAt(0)}</span>
+              <span>
+                <strong>{review.author}</strong>
+                <span class="origin">da {review.origin}</span>
+              </span>
+            </figcaption>
+          </figure>
+        </li>
+      ))
+    }
+  </ul>
+</section>
+
+<style>
+  .reviews {
+    padding-block: 3rem 4rem;
+  }
+
+  .head {
+    display: grid;
+    gap: 0.75rem;
+  }
+
+  .rating {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.85rem;
+    color: var(--a-muted);
+  }
+
+  .stars {
+    color: var(--a-terracotta);
+    letter-spacing: 0.1em;
+  }
+
+  .track {
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: 82%;
+    gap: 1rem;
+    margin-top: 2rem;
+    padding-inline: var(--a-gutter);
+    padding-bottom: 1rem;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scroll-padding-inline: var(--a-gutter);
+    scrollbar-width: none;
+  }
+
+  .track::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Ogni recensione è una cartolina con bordo a francobollo. */
+  .card {
+    scroll-snap-align: start;
+    padding: 0.5rem;
+    border-radius: 1.25rem;
+    background: var(--mood);
+  }
+
+  figure {
+    position: relative;
+    display: grid;
+    gap: 1.5rem;
+    height: 100%;
+    padding: 1.75rem 1.5rem 1.5rem;
+    border: 1.5px dashed rgb(74 53 48 / 0.25);
+    border-radius: 0.9rem;
+    background: var(--a-paper);
+  }
+
+  .stamp {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    display: grid;
+    place-items: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 50%;
+    background: var(--mood);
+    color: var(--a-terracotta);
+  }
+
+  blockquote p {
+    padding-right: 2rem;
+    font-family: var(--a-serif);
+    font-size: 1.5rem;
+    font-style: italic;
+    line-height: 1.3;
+  }
+
+  figcaption {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    align-self: end;
+    font-size: 0.875rem;
+  }
+
+  figcaption > span:last-child {
+    display: grid;
+  }
+
+  .avatar {
+    display: grid;
+    place-items: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 50%;
+    background: var(--mood-2);
+    font-family: var(--a-display);
+    font-size: 1.2rem;
+  }
+
+  .origin {
+    color: var(--a-muted);
+  }
+
+  @media (min-width: 48rem) {
+    .head {
+      text-align: center;
+      justify-items: center;
+    }
+
+    .track {
+      grid-auto-flow: row;
+      grid-template-columns: repeat(3, 1fr);
+      max-width: var(--a-max);
+      margin-inline: auto;
+      overflow: visible;
+    }
+  }
+</style>

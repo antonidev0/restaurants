@@ -1,5 +1,6 @@
 ---
 import type { Contact } from '@/types/restaurant';
+import Illustration from './Illustration.astro';
 
 interface Props {
   name: string;
@@ -7,47 +8,91 @@ interface Props {
 }
 
 const { name, contact } = Astro.props;
+const year = new Date().getFullYear();
 ---
 
 <footer class="footer">
+  <svg class="edge" viewBox="0 0 400 24" preserveAspectRatio="none" aria-hidden="true">
+    <path d="M0 24V12 Q25 0 50 12 T100 12 T150 12 T200 12 T250 12 T300 12 T350 12 T400 12 V24Z" />
+  </svg>
   <div class="a-wrap inner">
+    <Illustration mood="limone" class="lemon" />
     <p class="logo">{name}</p>
+    <p class="note">Fatto con limoni veri in Costiera Amalfitana</p>
     {
       contact.instagram && (
-        <a href={`https://instagram.com/${contact.instagram}`} rel="noopener noreferrer" target="_blank">
-          seguici su Instagram @{contact.instagram}
+        <a class="social" href={`https://instagram.com/${contact.instagram}`} rel="noopener noreferrer" target="_blank">
+          @{contact.instagram}
         </a>
       )
     }
-    <p class="small">Fatto con limoni veri in Costiera Amalfitana</p>
+    <p class="small">© {year} {name} · {contact.city}</p>
   </div>
 </footer>
 
 <style>
   .footer {
-    padding-block: 2rem 3rem;
-    text-align: center;
+    position: relative;
+    margin-top: 2rem;
+    color: var(--a-cream);
+  }
+
+  .edge {
+    display: block;
+    width: 100%;
+    height: 1.5rem;
+    fill: var(--a-ink);
   }
 
   .inner {
     display: grid;
-    gap: 0.5rem;
+    justify-items: center;
+    gap: 0.6rem;
+    /* Su mobile lascia spazio alla barra di prenotazione fissa. */
+    padding-block: 2.5rem calc(7rem + env(safe-area-inset-bottom));
+    background: var(--a-ink);
+    max-width: none;
+    text-align: center;
+  }
+
+  .footer :global(.lemon) {
+    width: 4.5rem;
+    animation: a-float 5s ease-in-out infinite;
   }
 
   .logo {
     font-family: var(--a-display);
-    font-size: 2rem;
+    font-size: clamp(2.25rem, 10vw, 3.5rem);
+    line-height: 1;
   }
 
-  a {
+  .note {
     font-family: var(--a-serif);
-    font-size: 1.1rem;
+    font-size: 1.15rem;
     font-style: italic;
-    color: var(--a-terracotta);
+    opacity: 0.8;
+  }
+
+  .social {
+    margin-top: 0.5rem;
+    padding: 0.5rem 1.1rem;
+    border-radius: 999px;
+    background: var(--a-pesca);
+    color: var(--a-ink);
+    font-size: 0.875rem;
+    font-weight: 500;
+    text-decoration: none;
   }
 
   .small {
+    margin-top: 1rem;
     font-size: 0.75rem;
-    color: var(--a-muted);
+    opacity: 0.55;
+  }
+
+  @media (min-width: 48rem) {
+    .inner {
+      padding-bottom: 3rem;
+    }
   }
 </style>

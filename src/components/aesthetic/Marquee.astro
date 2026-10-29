@@ -1,0 +1,62 @@
+---
+interface Props {
+  words: string[];
+}
+
+const { words } = Astro.props;
+const loop = [...words, ...words];
+---
+
+<div class="marquee-wrap" aria-hidden="true">
+  <div class="marquee">
+    <ul role="list" class="track">
+      {loop.map((word) => <li>{word}<span class="flower">✿</span></li>)}
+    </ul>
+  </div>
+</div>
+
+<style>
+  /* Il contenitore taglia la fascia ruotata, così non crea scroll orizzontale. */
+  .marquee-wrap {
+    overflow: hidden;
+    padding-block: 1.5rem 3rem;
+  }
+
+  .marquee {
+    overflow: hidden;
+    padding-block: 1rem;
+    background: var(--a-ink);
+    color: var(--a-cream);
+    rotate: -2deg;
+    margin-inline: -1rem;
+  }
+
+  .track {
+    display: flex;
+    width: max-content;
+    animation: marquee 30s linear infinite;
+  }
+
+  li {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    padding-right: 1.5rem;
+    font-family: var(--a-serif);
+    font-size: 1.75rem;
+    font-style: italic;
+    white-space: nowrap;
+  }
+
+  .flower {
+    font-style: normal;
+    font-size: 1rem;
+    color: var(--a-pesca);
+  }
+
+  @keyframes marquee {
+    to {
+      transform: translateX(-50%);
+    }
+  }
+</style>
