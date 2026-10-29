@@ -1,0 +1,53 @@
+---
+import type { Contact } from '@/types/restaurant';
+
+interface Props {
+  name: string;
+  contact: Contact;
+}
+
+const { name, contact } = Astro.props;
+---
+
+<footer class="footer">
+  <div class="a-wrap inner">
+    <p class="logo">{name}</p>
+    {
+      contact.instagram && (
+        <a href={`https://instagram.com/${contact.instagram}`} rel="noopener noreferrer" target="_blank">
+          seguici su Instagram @{contact.instagram}
+        </a>
+      )
+    }
+    <p class="small">Fatto con limoni veri in Costiera Amalfitana</p>
+  </div>
+</footer>
+
+<style>
+  .footer {
+    padding-block: 2rem 3rem;
+    text-align: center;
+  }
+
+  .inner {
+    display: grid;
+    gap: 0.5rem;
+  }
+
+  .logo {
+    font-family: var(--a-display);
+    font-size: 2rem;
+  }
+
+  a {
+    font-family: var(--a-serif);
+    font-size: 1.1rem;
+    font-style: italic;
+    color: var(--a-terracotta);
+  }
+
+  .small {
+    font-size: 0.75rem;
+    color: var(--a-muted);
+  }
+</style>

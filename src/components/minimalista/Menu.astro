@@ -1,0 +1,152 @@
+---
+import type { MenuSection } from '@/types/restaurant';
+import { formatPrice } from '@/utils/format';
+
+interface Props {
+  sections: MenuSection[];
+  tasting: { title: string; courses: number; price: number; note: string };
+}
+
+const { sections, tasting } = Astro.props;
+---
+
+<section id="menu" class="menu" aria-labelledby="menu-title">
+  <div class="m-wrap layout">
+    <header class="head">
+      <h2 id="menu-title" class="m-label">Menu</h2>
+      <p class="intro">Alla carta, oppure lasciate fare a noi.</p>
+    </header>
+
+    <div class="sections">
+      {
+        sections.map((section) => (
+          <div class="section">
+            <h3 class="section-title">{section.title}</h3>
+            <ul role="list">
+              {section.dishes.map((dish) => (
+                <li class="dish">
+                  <span class="dish-name">{dish.name}</span>
+                  <span class="dish-price">{formatPrice(dish.price)}</span>
+                  <span class="dish-desc">{dish.description}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        ))
+      }
+
+      <aside class="tasting" aria-label={tasting.title}>
+        <p class="tasting-top">
+          <span>{tasting.title}</span>
+          <span>{tasting.courses} portate</span>
+        </p>
+        <p class="tasting-price">{formatPrice(tasting.price)}</p>
+        <p class="tasting-note">{tasting.note}</p>
+      </aside>
+    </div>
+  </div>
+</section>
+
+<style>
+  .menu {
+    padding-block: var(--m-section);
+    border-top: 1px solid var(--m-line);
+  }
+
+  .layout {
+    display: grid;
+    gap: 2.5rem;
+  }
+
+  .intro {
+    margin-top: 1rem;
+    font-size: 1.5rem;
+    font-weight: 300;
+    letter-spacing: -0.02em;
+    max-width: 18ch;
+  }
+
+  .sections {
+    display: grid;
+    gap: 3rem;
+  }
+
+  .section-title {
+    font-size: 0.8125rem;
+    font-weight: 500;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid var(--m-ink);
+  }
+
+  .dish {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 0.2rem 1rem;
+    padding-block: 1.1rem;
+    border-bottom: 1px solid var(--m-line);
+  }
+
+  .dish-name {
+    font-size: 1.125rem;
+    font-weight: 500;
+    letter-spacing: -0.02em;
+  }
+
+  .dish-price {
+    font-variant-numeric: tabular-nums;
+    color: var(--m-muted);
+  }
+
+  .dish-desc {
+    grid-column: 1 / -1;
+    font-size: 0.875rem;
+    color: var(--m-muted);
+  }
+
+  .tasting {
+    padding: 1.75rem;
+    background: var(--m-ink);
+    color: var(--m-bg);
+  }
+
+  .tasting-top {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.75rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    opacity: 0.7;
+  }
+
+  .tasting-price {
+    margin-block: 2.5rem 1rem;
+    font-size: 3.5rem;
+    font-weight: 300;
+    line-height: 1;
+    letter-spacing: -0.05em;
+  }
+
+  .tasting-note {
+    font-size: 0.875rem;
+    opacity: 0.7;
+    max-width: 32ch;
+  }
+
+  @media (min-width: 48rem) {
+    .layout {
+      grid-template-columns: 1fr 2fr;
+      gap: 4rem;
+    }
+
+    .head {
+      position: sticky;
+      top: 6rem;
+      align-self: start;
+    }
+
+    .sections {
+      grid-template-columns: 1fr 1fr;
+      gap: 3.5rem 3rem;
+    }
+  }
+</style>

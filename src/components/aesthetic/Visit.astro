@@ -1,0 +1,122 @@
+---
+import type { Contact, OpeningHours } from '@/types/restaurant';
+import { toTelHref } from '@/utils/format';
+
+interface Props {
+  hours: OpeningHours[];
+  contact: Contact;
+}
+
+const { hours, contact } = Astro.props;
+---
+
+<section id="visita" class="visit" aria-labelledby="visita-title">
+  <div class="a-wrap">
+    <div class="card">
+      <p class="a-eyebrow">Vieni a trovarci</p>
+      <h2 id="visita-title" class="a-title">Ti teniamo <em>un posto</em> all’ombra</h2>
+
+      <dl class="hours">
+        {
+          hours.map((row) => (
+            <div class="row">
+              <dt>{row.days}</dt>
+              <dd>{row.hours}</dd>
+            </div>
+          ))
+        }
+      </dl>
+
+      <address class="address">
+        {contact.address}, {contact.city}
+      </address>
+
+      <div class="actions">
+        <a class="btn btn--primary" href={toTelHref(contact.phone)}>Chiama {contact.phone}</a>
+        <a class="btn" href={`mailto:${contact.email}`}>Scrivi una mail</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .visit {
+    padding-block: 2rem 4rem;
+  }
+
+  .card {
+    display: grid;
+    gap: 1.25rem;
+    padding: 3rem 1.5rem 2rem;
+    text-align: center;
+    justify-items: center;
+    border-radius: var(--a-arch);
+    background:
+      radial-gradient(circle at 50% 0%, #fff3c9 0 20%, transparent 55%),
+      linear-gradient(180deg, var(--a-pesca), var(--a-lavanda));
+  }
+
+  .hours {
+    display: grid;
+    gap: 0.5rem;
+    width: 100%;
+    max-width: 22rem;
+    margin-top: 0.5rem;
+  }
+
+  .row {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 0.75rem 1.1rem;
+    border-radius: 999px;
+    background: rgb(255 250 244 / 0.7);
+    font-size: 0.9rem;
+  }
+
+  dt {
+    font-weight: 500;
+  }
+
+  .address {
+    font-family: var(--a-serif);
+    font-size: 1.2rem;
+    font-style: italic;
+  }
+
+  .actions {
+    display: grid;
+    gap: 0.75rem;
+    width: 100%;
+    max-width: 22rem;
+  }
+
+  .btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 3.25rem;
+    border-radius: 999px;
+    background: var(--a-paper);
+    text-decoration: none;
+    font-weight: 500;
+    transition: transform 0.2s ease;
+  }
+
+  .btn--primary {
+    background: var(--a-ink);
+    color: var(--a-cream);
+  }
+
+  .btn:hover {
+    transform: translateY(-2px);
+  }
+
+  @media (min-width: 48rem) {
+    .card {
+      padding: 5rem 3rem 4rem;
+      max-width: 40rem;
+      margin-inline: auto;
+    }
+  }
+</style>

@@ -1,0 +1,36 @@
+---
+import '@fontsource/italiana';
+import '@fontsource/cormorant-garamond/400.css';
+import '@fontsource/cormorant-garamond/400-italic.css';
+import '@fontsource/cormorant-garamond/500.css';
+import '@fontsource/cormorant-garamond/500-italic.css';
+import '@fontsource-variable/dm-sans';
+import '@/styles/themes/aesthetic.css';
+
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Header from '@/components/aesthetic/Header.astro';
+import Hero from '@/components/aesthetic/Hero.astro';
+import Story from '@/components/aesthetic/Story.astro';
+import Signature from '@/components/aesthetic/Signature.astro';
+import Moments from '@/components/aesthetic/Moments.astro';
+import Visit from '@/components/aesthetic/Visit.astro';
+import Footer from '@/components/aesthetic/Footer.astro';
+import { aesthetic as content } from '@/data/aesthetic';
+---
+
+<BaseLayout
+  title={`${content.name} — Positano`}
+  description={content.description}
+  themeColor="#fbf4ec"
+  theme="theme-aesthetic"
+>
+  <Header name={content.name} nav={content.nav} />
+  <main id="contenuto">
+    <Hero name={content.name} eyebrow={content.eyebrow} tagline={content.tagline} />
+    <Story story={content.story} description={content.description} />
+    <Signature dishes={content.signature} />
+    <Moments moments={content.moments} quote={content.quote} />
+    <Visit hours={content.hours} contact={content.contact} />
+  </main>
+  <Footer name={content.name} contact={content.contact} />
+</BaseLayout>

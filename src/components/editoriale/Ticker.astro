@@ -1,0 +1,75 @@
+---
+interface Props {
+  items: string[];
+}
+
+const { items } = Astro.props;
+// La lista viene duplicata per ottenere uno scorrimento continuo senza salti.
+const loop = [...items, ...items];
+---
+
+<div class="ticker" role="region" aria-label="Ultime notizie dalla cucina">
+  <p class="label">Ultim’ora</p>
+  <div class="viewport">
+    <ul role="list" class="track">
+      {loop.map((item, i) => <li aria-hidden={i >= items.length ? 'true' : undefined}>{item}</li>)}
+    </ul>
+  </div>
+</div>
+
+<style>
+  .ticker {
+    display: flex;
+    align-items: stretch;
+    background: var(--e-ink);
+    color: var(--e-paper);
+    font-family: var(--e-mono);
+    font-size: 0.78rem;
+    overflow: hidden;
+  }
+
+  .label {
+    flex: none;
+    display: flex;
+    align-items: center;
+    padding-inline: 0.9rem;
+    background: var(--e-red);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    font-weight: 500;
+  }
+
+  .viewport {
+    flex: 1;
+    overflow: hidden;
+  }
+
+  .track {
+    display: flex;
+    width: max-content;
+    animation: scroll 28s linear infinite;
+  }
+
+  .track li {
+    padding: 0.7rem 1.5rem;
+    white-space: nowrap;
+  }
+
+  .track li::before {
+    content: '■';
+    margin-right: 1.5rem;
+    color: var(--e-red);
+    font-size: 0.6em;
+    vertical-align: middle;
+  }
+
+  .ticker:hover .track {
+    animation-play-state: paused;
+  }
+
+  @keyframes scroll {
+    to {
+      transform: translateX(-50%);
+    }
+  }
+</style>

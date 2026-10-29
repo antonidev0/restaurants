@@ -1,0 +1,47 @@
+---
+import type { Contact } from '@/types/restaurant';
+
+interface Props {
+  name: string;
+  contact: Contact;
+}
+
+const { name, contact } = Astro.props;
+const year = new Date().getFullYear();
+---
+
+<footer class="footer">
+  <div class="m-wrap inner">
+    <p>© {year} {name}</p>
+    {
+      contact.instagram && (
+        <a href={`https://instagram.com/${contact.instagram}`} rel="noopener noreferrer" target="_blank">
+          @{contact.instagram}
+        </a>
+      )
+    }
+  </div>
+</footer>
+
+<style>
+  .footer {
+    padding-block: 2rem;
+    border-top: 1px solid var(--m-line);
+    font-size: 0.8125rem;
+    color: var(--m-muted);
+  }
+
+  .inner {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+  }
+
+  a {
+    text-decoration: none;
+  }
+
+  a:hover {
+    color: var(--m-ink);
+  }
+</style>

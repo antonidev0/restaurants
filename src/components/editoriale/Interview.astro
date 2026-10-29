@@ -1,0 +1,120 @@
+---
+import type { EditorialeContent } from '@/data/editoriale';
+
+interface Props {
+  feature: EditorialeContent['feature'];
+}
+
+const { feature } = Astro.props;
+const [first, ...rest] = feature.body;
+---
+
+<article id="intervista" class="interview" aria-labelledby="intervista-title">
+  <div class="e-wrap">
+    <div class="e-section-head">
+      <span>{feature.kicker}</span>
+      <span>Pagina 2</span>
+    </div>
+
+    <header class="head">
+      <h2 id="intervista-title" class="title">{feature.title}</h2>
+      <p class="byline">{feature.byline}</p>
+    </header>
+
+    <div class="body">
+      <p class="dropcap">{first}</p>
+      <aside class="pull" aria-label="Citazione">
+        <p>«{feature.pullQuote}»</p>
+      </aside>
+      {rest.map((p) => <p>{p}</p>)}
+    </div>
+  </div>
+</article>
+
+<style>
+  .interview {
+    padding-block: 2rem 3.5rem;
+  }
+
+  .head {
+    padding-block: 1.75rem 1.5rem;
+  }
+
+  .title {
+    font-family: var(--e-display);
+    font-size: clamp(2rem, 8.5vw, 4rem);
+    font-style: italic;
+    font-weight: 500;
+    line-height: 1.05;
+  }
+
+  .byline {
+    margin-top: 1rem;
+    font-family: var(--e-mono);
+    font-size: 0.75rem;
+    color: var(--e-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+
+  .body {
+    font-size: 1.05rem;
+    line-height: 1.65;
+    hyphens: auto;
+  }
+
+  .body p + p {
+    margin-top: 1rem;
+    text-indent: 1.5em;
+  }
+
+  .dropcap::first-letter {
+    float: left;
+    margin: 0.08em 0.1em 0 0;
+    font-family: var(--e-display);
+    font-size: 4.6em;
+    font-weight: 900;
+    line-height: 0.8;
+    color: var(--e-red);
+  }
+
+  .pull {
+    margin-block: 1.75rem;
+    padding-block: 1.25rem;
+    border-block: 1px solid var(--e-rule);
+    break-inside: avoid;
+  }
+
+  .body .pull p {
+    margin: 0;
+    text-indent: 0;
+    font-family: var(--e-display);
+    font-size: 1.75rem;
+    font-weight: 700;
+    line-height: 1.15;
+    text-align: center;
+    hyphens: none;
+  }
+
+  @media (min-width: 48rem) {
+    .body {
+      columns: 2;
+      column-gap: 2.5rem;
+      column-rule: 1px solid var(--e-hair);
+    }
+
+    .body .pull {
+      margin-top: 0;
+    }
+  }
+
+  @media (min-width: 64rem) {
+    .head {
+      max-width: 60rem;
+    }
+
+    .body {
+      columns: 3;
+    }
+  }
+</style>

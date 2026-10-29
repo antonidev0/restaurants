@@ -1,0 +1,125 @@
+---
+import type { Contact, OpeningHours } from '@/types/restaurant';
+import { toTelHref } from '@/utils/format';
+
+interface Props {
+  hours: OpeningHours[];
+  contact: Contact;
+}
+
+const { hours, contact } = Astro.props;
+---
+
+<section id="orari" class="visit" aria-labelledby="orari-title">
+  <div class="m-wrap layout">
+    <div>
+      <h2 id="orari-title" class="m-label">Orari</h2>
+      <dl class="hours">
+        {
+          hours.map((row) => (
+            <div class="row">
+              <dt>{row.days}</dt>
+              <dd>{row.hours}</dd>
+            </div>
+          ))
+        }
+      </dl>
+    </div>
+
+    <div id="prenota" class="booking">
+      <h2 class="m-label">Prenota</h2>
+      <p class="lead">Solo dodici posti. Meglio telefonare.</p>
+      <div class="actions">
+        <a class="btn btn--solid" href={toTelHref(contact.phone)}>{contact.phone}</a>
+        <a class="btn" href={`mailto:${contact.email}`}>Scrivici</a>
+      </div>
+      <address class="address">
+        {contact.address}<br />
+        {contact.city}
+      </address>
+    </div>
+  </div>
+</section>
+
+<style>
+  .visit {
+    padding-block: var(--m-section);
+    border-top: 1px solid var(--m-line);
+  }
+
+  .layout {
+    display: grid;
+    gap: 4rem;
+  }
+
+  .hours {
+    margin-top: 1.5rem;
+  }
+
+  .row {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    padding-block: 1rem;
+    border-bottom: 1px solid var(--m-line);
+  }
+
+  dd {
+    font-variant-numeric: tabular-nums;
+    color: var(--m-muted);
+    text-align: right;
+  }
+
+  .lead {
+    margin-top: 1rem;
+    font-size: clamp(2rem, 9vw, 3.5rem);
+    font-weight: 400;
+    line-height: 1.05;
+    letter-spacing: -0.045em;
+  }
+
+  .actions {
+    display: grid;
+    gap: 0.75rem;
+    margin-top: 2rem;
+  }
+
+  .btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 3.25rem;
+    padding-inline: 1.5rem;
+    border: 1px solid var(--m-ink);
+    border-radius: 999px;
+    text-decoration: none;
+    font-weight: 500;
+    transition: opacity 0.2s ease;
+  }
+
+  .btn--solid {
+    background: var(--m-ink);
+    color: var(--m-bg);
+  }
+
+  .btn:hover {
+    opacity: 0.75;
+  }
+
+  .address {
+    margin-top: 2rem;
+    font-style: normal;
+    color: var(--m-muted);
+  }
+
+  @media (min-width: 48rem) {
+    .layout {
+      grid-template-columns: 1fr 1fr;
+      gap: 6rem;
+    }
+
+    .actions {
+      display: flex;
+    }
+  }
+</style>

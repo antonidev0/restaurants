@@ -1,0 +1,78 @@
+---
+interface Props {
+  story: { title: string; paragraphs: string[] };
+  description: string;
+}
+
+const { story, description } = Astro.props;
+---
+
+<section id="storia" class="story" aria-labelledby="storia-title">
+  <div class="a-wrap card">
+    <div class="blob" aria-hidden="true"></div>
+    <p class="a-eyebrow">La nostra storia</p>
+    <h2 id="storia-title" class="a-title">{story.title}</h2>
+    <p class="lead">{description}</p>
+    {story.paragraphs.map((p) => <p class="text">{p}</p>)}
+    <p class="signature" aria-hidden="true">con amore, la famiglia Esposito</p>
+  </div>
+</section>
+
+<style>
+  .story {
+    padding-block: 2rem 4rem;
+  }
+
+  .card {
+    position: relative;
+    display: grid;
+    gap: 1.25rem;
+    padding-block: 3rem;
+    background: var(--a-paper);
+    border-radius: var(--a-radius);
+    width: auto;
+    max-width: none;
+    margin-inline: max(0.75rem, (100% - 48rem) / 2);
+    overflow: hidden;
+    isolation: isolate;
+  }
+
+  .blob {
+    position: absolute;
+    z-index: -1;
+    top: -5rem;
+    right: -6rem;
+    width: 16rem;
+    aspect-ratio: 1;
+    background: var(--a-lavanda);
+    border-radius: 42% 58% 63% 37% / 41% 44% 56% 59%;
+    filter: blur(2px);
+    opacity: 0.8;
+  }
+
+  .lead {
+    font-family: var(--a-serif);
+    font-size: 1.4rem;
+    font-style: italic;
+    line-height: 1.4;
+  }
+
+  .text {
+    color: var(--a-muted);
+    line-height: 1.7;
+  }
+
+  .signature {
+    margin-top: 0.5rem;
+    font-family: var(--a-serif);
+    font-size: 1.25rem;
+    font-style: italic;
+    color: var(--a-terracotta);
+  }
+
+  @media (min-width: 48rem) {
+    .card {
+      padding: 4rem 4.5rem;
+    }
+  }
+</style>

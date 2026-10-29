@@ -1,0 +1,29 @@
+---
+import '@fontsource-variable/inter';
+import '@/styles/themes/minimalista.css';
+
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Header from '@/components/minimalista/Header.astro';
+import Hero from '@/components/minimalista/Hero.astro';
+import Principles from '@/components/minimalista/Principles.astro';
+import Menu from '@/components/minimalista/Menu.astro';
+import Visit from '@/components/minimalista/Visit.astro';
+import Footer from '@/components/minimalista/Footer.astro';
+import { minimalista as content } from '@/data/minimalista';
+---
+
+<BaseLayout
+  title={`${content.name} — Cucina essenziale a Milano`}
+  description={content.description}
+  themeColor="#f4f2ee"
+  theme="theme-minimalista"
+>
+  <Header name={content.name} nav={content.nav} />
+  <main id="contenuto">
+    <Hero name={content.name} tagline={content.tagline} description={content.description} city="Milano" />
+    <Principles principles={content.principles} />
+    <Menu sections={content.menu} tasting={content.tasting} />
+    <Visit hours={content.hours} contact={content.contact} />
+  </main>
+  <Footer name={content.name} contact={content.contact} />
+</BaseLayout>

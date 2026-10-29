@@ -1,0 +1,102 @@
+---
+import type { EditorialeContent } from '@/data/editoriale';
+import { pad } from '@/utils/format';
+
+interface Props {
+  briefs: EditorialeContent['briefs'];
+}
+
+const { briefs } = Astro.props;
+---
+
+<section id="cronache" class="cronache" aria-labelledby="cronache-title">
+  <div class="e-wrap">
+    <div class="e-section-head">
+      <h2 id="cronache-title">Cronache di quartiere</h2>
+      <span>Pagina 4</span>
+    </div>
+
+    <ol role="list" class="list">
+      {
+        briefs.map((brief, i) => (
+          <li class="brief">
+            <span class="index">{pad(i + 1)}</span>
+            <h3 class="title">{brief.title}</h3>
+            <p class="text">{brief.text}</p>
+          </li>
+        ))
+      }
+    </ol>
+  </div>
+</section>
+
+<style>
+  .cronache {
+    padding-block: 2rem 3.5rem;
+  }
+
+  .e-section-head h2 {
+    font: inherit;
+  }
+
+  .list {
+    display: grid;
+  }
+
+  .brief {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 0.25rem 1rem;
+    padding-block: 1.5rem;
+    border-bottom: 1px solid var(--e-hair);
+  }
+
+  .index {
+    grid-row: span 2;
+    font-family: var(--e-display);
+    font-size: 2.75rem;
+    font-weight: 900;
+    font-style: italic;
+    line-height: 0.85;
+    color: var(--e-red);
+  }
+
+  .title {
+    font-family: var(--e-display);
+    font-size: 1.4rem;
+    font-weight: 700;
+    line-height: 1.15;
+  }
+
+  .text {
+    font-size: 0.98rem;
+    line-height: 1.55;
+    color: var(--e-muted);
+  }
+
+  @media (min-width: 48rem) {
+    .list {
+      grid-template-columns: repeat(3, 1fr);
+    }
+
+    .brief {
+      grid-template-columns: 1fr;
+      padding: 1.75rem 1.5rem 0;
+      border-bottom: 0;
+    }
+
+    .brief:first-child {
+      padding-left: 0;
+    }
+
+    .brief + .brief {
+      border-left: 1px solid var(--e-hair);
+    }
+
+    .index {
+      grid-row: auto;
+      font-size: 4rem;
+      margin-bottom: 0.75rem;
+    }
+  }
+</style>

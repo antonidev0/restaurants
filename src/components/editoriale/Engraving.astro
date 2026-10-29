@@ -1,0 +1,66 @@
+---
+/** Illustrazione in stile incisione: un piatto di carbonara visto dall'alto, a tratteggio. */
+---
+
+<svg viewBox="0 0 320 240" role="img" aria-labelledby="engraving-title">
+  <title id="engraving-title">Incisione di un piatto di carbonara con forchetta</title>
+  <defs>
+    <pattern id="hatch" width="4" height="4" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+      <line x1="0" y1="0" x2="0" y2="4" stroke="currentColor" stroke-width="0.8" />
+    </pattern>
+    <pattern id="hatch-dense" width="2.6" height="2.6" patternUnits="userSpaceOnUse" patternTransform="rotate(-35)">
+      <line x1="0" y1="0" x2="0" y2="2.6" stroke="currentColor" stroke-width="0.9" />
+    </pattern>
+    <clipPath id="pasta-clip">
+      <ellipse cx="160" cy="118" rx="70" ry="48" />
+    </clipPath>
+  </defs>
+
+  <g fill="none" stroke="currentColor" stroke-width="1.1">
+    <!-- Ombra -->
+    <ellipse cx="166" cy="130" rx="128" ry="86" fill="url(#hatch)" stroke="none" opacity="0.55" />
+    <!-- Piatto -->
+    <ellipse cx="160" cy="120" rx="128" ry="86" fill="var(--e-paper)" />
+    <ellipse cx="160" cy="120" rx="96" ry="64" />
+    <ellipse cx="160" cy="120" rx="92" ry="61" stroke-dasharray="1 3" />
+
+    <!-- Spaghetti: un nido di anelli ellittici sovrapposti -->
+    <g clip-path="url(#pasta-clip)" stroke-width="0.9">
+      {
+        Array.from({ length: 22 }, (_, i) => (
+          <ellipse
+            cx={160 + Math.sin(i * 1.7) * 10}
+            cy={118 + Math.cos(i * 1.3) * 7}
+            rx={22 + (i % 7) * 7}
+            ry={14 + (i % 5) * 5}
+            transform={`rotate(${i * 23} 160 118)`}
+          />
+        ))
+      }
+    </g>
+    <ellipse cx="160" cy="118" rx="70" ry="48" stroke-width="0.6" stroke-dasharray="2 2" />
+
+    <!-- Guanciale -->
+    <rect x="128" y="98" width="16" height="10" rx="2" transform="rotate(-18 136 103)" fill="url(#hatch-dense)" />
+    <rect x="176" y="128" width="18" height="10" rx="2" transform="rotate(24 185 133)" fill="url(#hatch-dense)" />
+    <rect x="150" y="136" width="14" height="9" rx="2" transform="rotate(-6 157 140)" fill="url(#hatch-dense)" />
+    <rect x="184" y="96" width="13" height="9" rx="2" transform="rotate(40 190 100)" fill="url(#hatch-dense)" />
+
+    <!-- Pepe -->
+    <g fill="currentColor" stroke="none">
+      <circle cx="140" cy="124" r="1.4" />
+      <circle cx="170" cy="110" r="1.2" />
+      <circle cx="196" cy="118" r="1.4" />
+      <circle cx="160" cy="96" r="1.1" />
+      <circle cx="132" cy="142" r="1.2" />
+      <circle cx="176" cy="150" r="1.3" />
+    </g>
+
+    <!-- Forchetta -->
+    <g transform="translate(-22 4) rotate(-28 270 60)">
+      <path d="M262 18v34M268 18v34M274 18v34M280 18v34" />
+      <path d="M260 50c0 10 6 14 11 14s11-4 11-14" />
+      <path d="M268 64h6v150h-6z" fill="url(#hatch-dense)" />
+    </g>
+  </g>
+</svg>

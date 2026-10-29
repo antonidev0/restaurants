@@ -1,0 +1,59 @@
+---
+import type { Contact } from '@/types/restaurant';
+
+interface Props {
+  name: string;
+  issue: string;
+  contact: Contact;
+}
+
+const { name, issue, contact } = Astro.props;
+const year = new Date().getFullYear();
+---
+
+<footer class="colophon">
+  <div class="e-wrap inner">
+    <p class="name">{name}</p>
+    <p class="meta">
+      {issue} · Stampato su tovaglie a quadri · © {year}
+      {
+        contact.instagram && (
+          <>
+            {' · '}
+            <a href={`https://instagram.com/${contact.instagram}`} rel="noopener noreferrer" target="_blank">
+              @{contact.instagram}
+            </a>
+          </>
+        )
+      }
+    </p>
+  </div>
+</footer>
+
+<style>
+  .colophon {
+    padding-block: 2rem;
+    background: var(--e-ink);
+    color: var(--e-paper);
+  }
+
+  .inner {
+    display: grid;
+    gap: 0.5rem;
+    text-align: center;
+  }
+
+  .name {
+    font-family: var(--e-display);
+    font-size: 2rem;
+    font-weight: 900;
+  }
+
+  .meta {
+    font-family: var(--e-mono);
+    font-size: 0.7rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    opacity: 0.75;
+  }
+</style>

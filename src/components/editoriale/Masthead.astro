@@ -1,0 +1,123 @@
+---
+import type { EditorialeContent } from '@/data/editoriale';
+
+interface Props {
+  name: string;
+  masthead: EditorialeContent['masthead'];
+  nav: EditorialeContent['nav'];
+}
+
+const { name, masthead, nav } = Astro.props;
+---
+
+<header class="masthead">
+  <div class="e-wrap">
+    <div class="strip">
+      <span>{masthead.issue}</span>
+      <span>{masthead.date}</span>
+      <span class="price">{masthead.price}</span>
+    </div>
+
+    <p class="nameplate">
+      <a href="#contenuto">{name}</a>
+    </p>
+    <p class="motto">— {masthead.motto} —</p>
+  </div>
+
+  <nav class="nav" aria-label="Sezioni">
+    <ul role="list" class="e-wrap links">
+      {nav.map((link) => <li><a href={link.href}>{link.label}</a></li>)}
+    </ul>
+  </nav>
+</header>
+
+<style>
+  .masthead {
+    padding-top: 0.75rem;
+  }
+
+  .strip {
+    display: flex;
+    justify-content: space-between;
+    gap: 0.75rem;
+    padding-bottom: 0.6rem;
+    border-bottom: 1px solid var(--e-rule);
+    font-family: var(--e-mono);
+    font-size: 0.68rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+
+  .price {
+    display: none;
+  }
+
+  .nameplate {
+    padding-block: 0.9rem 0.2rem;
+    text-align: center;
+    font-family: var(--e-display);
+    font-size: clamp(2.4rem, 12.4vw, 9.5rem);
+    font-weight: 900;
+    line-height: 0.9;
+    letter-spacing: -0.035em;
+    white-space: nowrap;
+  }
+
+  .nameplate a {
+    text-decoration: none;
+  }
+
+  .motto {
+    padding-bottom: 0.75rem;
+    text-align: center;
+    font-style: italic;
+    font-size: 0.95rem;
+    color: var(--e-muted);
+  }
+
+  .nav {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background: var(--e-paper);
+    border-block: 1px solid var(--e-rule);
+  }
+
+  /* Su mobile le sezioni scorrono in orizzontale, come le testatine di un quotidiano. */
+  .links {
+    display: flex;
+    gap: 1.5rem;
+    overflow-x: auto;
+    scrollbar-width: none;
+    white-space: nowrap;
+  }
+
+  .links::-webkit-scrollbar {
+    display: none;
+  }
+
+  .links a {
+    display: block;
+    padding-block: 0.8rem;
+    font-family: var(--e-mono);
+    font-size: 0.75rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    text-decoration: none;
+  }
+
+  .links a:hover {
+    color: var(--e-red);
+  }
+
+  @media (min-width: 48rem) {
+    .price {
+      display: inline;
+    }
+
+    .links {
+      justify-content: center;
+      gap: 2.5rem;
+    }
+  }
+</style>

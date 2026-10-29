@@ -1,0 +1,133 @@
+---
+interface Props {
+  name: string;
+  tagline: string;
+  description: string;
+  city: string;
+}
+
+const { name, tagline, description, city } = Astro.props;
+---
+
+<section class="hero" aria-labelledby="hero-title">
+  <div class="m-wrap grid">
+    <p class="m-label meta">Ristorante — {city}</p>
+
+    <h1 id="hero-title" class="title">
+      <span class="name">{name}<span class="dot" aria-hidden="true">.</span></span>
+      <span class="tagline">{tagline}</span>
+    </h1>
+
+    <figure class="plate" aria-hidden="true">
+      <svg viewBox="0 0 200 200" fill="none">
+        <circle cx="100" cy="100" r="92" stroke="currentColor" stroke-width="0.75" />
+        <circle cx="100" cy="100" r="64" stroke="currentColor" stroke-width="0.75" />
+        <circle class="grain" cx="112" cy="90" r="3.5" />
+      </svg>
+    </figure>
+
+    <p class="description">{description}</p>
+
+    <a class="scroll" href="#filosofia">
+      <span>Scopri</span>
+      <svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><path d="M8 2v12m0 0 5-5m-5 5-5-5" stroke="currentColor" fill="none" stroke-width="1.25" /></svg>
+    </a>
+  </div>
+</section>
+
+<style>
+  .hero {
+    padding-block: 3rem var(--m-section);
+  }
+
+  .grid {
+    display: grid;
+    gap: 2.5rem;
+  }
+
+  .title {
+    display: grid;
+    gap: 1rem;
+    font-weight: 400;
+  }
+
+  .name {
+    font-size: clamp(5.5rem, 32vw, 14rem);
+    font-weight: 600;
+    line-height: 0.82;
+    letter-spacing: -0.07em;
+    margin-left: -0.05em;
+  }
+
+  .dot {
+    color: var(--m-accent);
+  }
+
+  .tagline {
+    font-size: 1.5rem;
+    font-weight: 300;
+    letter-spacing: -0.02em;
+  }
+
+  .plate {
+    width: min(70%, 18rem);
+    justify-self: end;
+    color: var(--m-ink);
+    opacity: 0.85;
+  }
+
+  .grain {
+    fill: var(--m-accent);
+  }
+
+  .description {
+    max-width: 30ch;
+    color: var(--m-muted);
+    font-size: 1.0625rem;
+    line-height: 1.6;
+  }
+
+  .scroll {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    width: fit-content;
+    font-size: 0.875rem;
+    text-decoration: none;
+    border-bottom: 1px solid var(--m-line);
+    padding-bottom: 0.25rem;
+  }
+
+  @media (min-width: 48rem) {
+    .hero {
+      padding-top: 6rem;
+    }
+
+    .grid {
+      grid-template-columns: 1fr 1fr;
+      align-items: end;
+      row-gap: 4rem;
+    }
+
+    .meta,
+    .title {
+      grid-column: 1 / -1;
+    }
+
+    .plate {
+      grid-row: 3;
+      grid-column: 2;
+      width: 20rem;
+    }
+
+    .description {
+      grid-row: 3;
+      grid-column: 1;
+      align-self: end;
+    }
+
+    .tagline {
+      font-size: 2.25rem;
+    }
+  }
+</style>

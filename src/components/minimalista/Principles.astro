@@ -1,0 +1,89 @@
+---
+import { pad } from '@/utils/format';
+
+interface Props {
+  principles: { title: string; text: string }[];
+}
+
+const { principles } = Astro.props;
+---
+
+<section id="filosofia" class="principles" aria-labelledby="filosofia-title">
+  <div class="m-wrap">
+    <h2 id="filosofia-title" class="m-label">Filosofia</h2>
+    <ol role="list" class="list">
+      {
+        principles.map((item, i) => (
+          <li class="item">
+            <span class="index">{pad(i + 1)}</span>
+            <h3 class="title">{item.title}</h3>
+            <p class="text">{item.text}</p>
+          </li>
+        ))
+      }
+    </ol>
+  </div>
+</section>
+
+<style>
+  .principles {
+    padding-block: var(--m-section);
+    border-top: 1px solid var(--m-line);
+  }
+
+  .list {
+    display: grid;
+    margin-top: 2.5rem;
+  }
+
+  .item {
+    display: grid;
+    grid-template-columns: 2.5rem 1fr;
+    gap: 0.25rem 1rem;
+    padding-block: 1.75rem;
+    border-bottom: 1px solid var(--m-line);
+  }
+
+  .item:first-child {
+    border-top: 1px solid var(--m-line);
+  }
+
+  .index {
+    grid-row: span 2;
+    font-size: 0.75rem;
+    color: var(--m-muted);
+    font-variant-numeric: tabular-nums;
+    padding-top: 0.45rem;
+  }
+
+  .title {
+    font-size: 1.5rem;
+    font-weight: 500;
+    letter-spacing: -0.03em;
+  }
+
+  .text {
+    color: var(--m-muted);
+    max-width: 34ch;
+  }
+
+  @media (min-width: 48rem) {
+    .list {
+      grid-template-columns: repeat(3, 1fr);
+      gap: 2.5rem;
+    }
+
+    .item,
+    .item:first-child {
+      grid-template-columns: 1fr;
+      border-top: 1px solid var(--m-ink);
+      border-bottom: 0;
+    }
+
+    .index {
+      grid-row: auto;
+      padding-top: 0;
+      margin-bottom: 2rem;
+    }
+  }
+</style>

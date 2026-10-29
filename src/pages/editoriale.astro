@@ -1,0 +1,38 @@
+---
+import '@fontsource-variable/playfair-display';
+import '@fontsource-variable/playfair-display/wght-italic.css';
+import '@fontsource-variable/fraunces';
+import '@fontsource-variable/fraunces/wght-italic.css';
+import '@fontsource/ibm-plex-mono/400.css';
+import '@fontsource/ibm-plex-mono/500.css';
+import '@/styles/themes/editoriale.css';
+
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Masthead from '@/components/editoriale/Masthead.astro';
+import Ticker from '@/components/editoriale/Ticker.astro';
+import CoverStory from '@/components/editoriale/CoverStory.astro';
+import Interview from '@/components/editoriale/Interview.astro';
+import Listino from '@/components/editoriale/Listino.astro';
+import Cronache from '@/components/editoriale/Cronache.astro';
+import Classified from '@/components/editoriale/Classified.astro';
+import Colophon from '@/components/editoriale/Colophon.astro';
+import { editoriale as content } from '@/data/editoriale';
+---
+
+<BaseLayout
+  title={`${content.name} — ${content.tagline}`}
+  description={content.description}
+  themeColor="#f2ede2"
+  theme="theme-editoriale"
+>
+  <Masthead name={content.name} masthead={content.masthead} nav={content.nav} />
+  <Ticker items={content.ticker} />
+  <main id="contenuto">
+    <CoverStory headline={content.headline} numbers={content.numbers} />
+    <Interview feature={content.feature} />
+    <Listino sections={content.menu} />
+    <Cronache briefs={content.briefs} />
+    <Classified name={content.name} description={content.description} hours={content.hours} contact={content.contact} />
+  </main>
+  <Colophon name={content.name} issue={content.masthead.issue} contact={content.contact} />
+</BaseLayout>

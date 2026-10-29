@@ -1,0 +1,26 @@
+---
+/** Link di accessibilità: permette di saltare la navigazione con la tastiera. */
+---
+
+<a class="skip-link" href="#contenuto">Vai al contenuto</a>
+
+<style>
+  .skip-link {
+    position: fixed;
+    top: 0.75rem;
+    left: 0.75rem;
+    z-index: 100;
+    padding: 0.6rem 1rem;
+    background: #111;
+    color: #fff;
+    font: 500 0.875rem/1 system-ui, sans-serif;
+    text-decoration: none;
+    border-radius: 0.25rem;
+    transform: translateY(-200%);
+    transition: transform 0.2s ease;
+  }
+
+  .skip-link:focus-visible {
+    transform: translateY(0);
+  }
+</style>

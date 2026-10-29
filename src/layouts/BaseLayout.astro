@@ -1,0 +1,39 @@
+---
+import '@/styles/reset.css';
+import SkipLink from '@/components/shared/SkipLink.astro';
+
+interface Props {
+  title: string;
+  description: string;
+  /** Colore della barra del browser su mobile. */
+  themeColor: string;
+  /** Classe applicata al <body> per attivare i token del tema. */
+  theme?: string;
+}
+
+const { title, description, themeColor, theme } = Astro.props;
+const canonical = new URL(Astro.url.pathname, Astro.site);
+---
+
+<!doctype html>
+<html lang="it">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <meta name="theme-color" content={themeColor} />
+    <link rel="canonical" href={canonical} />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="it_IT" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+  </head>
+  <body class={theme}>
+    <SkipLink />
+    <slot />
+  </body>
+</html>

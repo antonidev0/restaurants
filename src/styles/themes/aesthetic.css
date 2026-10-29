@@ -1,0 +1,92 @@
+.theme-aesthetic {
+  --a-cream: #fbf4ec;
+  --a-paper: #fffaf4;
+  --a-ink: #4a3530;
+  --a-muted: #8a716a;
+  --a-terracotta: #d4775a;
+
+  --a-pesca: #f7cdb6;
+  --a-salvia: #cfdcc3;
+  --a-limone: #f6e5a4;
+  --a-lavanda: #ddd2ea;
+
+  --a-display: 'Italiana', 'Didot', serif;
+  --a-serif: 'Cormorant Garamond', 'Garamond', serif;
+  --a-sans: 'DM Sans Variable', system-ui, sans-serif;
+
+  --a-gutter: 1.25rem;
+  --a-max: 70rem;
+  --a-radius: 1.75rem;
+  --a-arch: 999px 999px var(--a-radius) var(--a-radius);
+
+  position: relative;
+  background: var(--a-cream);
+  color: var(--a-ink);
+  font-family: var(--a-sans);
+  /* Spazio per la barra di prenotazione fissa su mobile. */
+  padding-bottom: calc(5.5rem + env(safe-area-inset-bottom));
+}
+
+/* Grana leggera, tipo pellicola, sopra tutta la pagina. */
+.theme-aesthetic::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  pointer-events: none;
+  opacity: 0.18;
+  mix-blend-mode: multiply;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .3 0 0 0 0 .2 0 0 0 0 .18 0 0 0 .55 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+@media (min-width: 48rem) {
+  .theme-aesthetic {
+    --a-gutter: 2.5rem;
+    padding-bottom: 0;
+  }
+}
+
+.theme-aesthetic ::selection {
+  background: var(--a-pesca);
+}
+
+.theme-aesthetic :focus-visible {
+  outline: 2px dashed var(--a-terracotta);
+  outline-offset: 4px;
+}
+
+.theme-aesthetic .a-wrap {
+  width: 100%;
+  max-width: var(--a-max);
+  margin-inline: auto;
+  padding-inline: var(--a-gutter);
+}
+
+.theme-aesthetic .a-eyebrow {
+  font-family: var(--a-sans);
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--a-terracotta);
+}
+
+.theme-aesthetic .a-title {
+  font-family: var(--a-display);
+  font-weight: 400;
+  font-size: clamp(2.4rem, 10vw, 4.5rem);
+  line-height: 1;
+  letter-spacing: -0.01em;
+}
+
+.theme-aesthetic .a-title em {
+  font-family: var(--a-serif);
+  font-style: italic;
+  color: var(--a-terracotta);
+}
+
+/* Sfondi "mood" riutilizzati da card, archi e pillole. */
+.theme-aesthetic .mood-pesca { --mood: var(--a-pesca); --mood-2: #f3a98c; }
+.theme-aesthetic .mood-salvia { --mood: var(--a-salvia); --mood-2: #a9c29a; }
+.theme-aesthetic .mood-limone { --mood: var(--a-limone); --mood-2: #f1cf63; }
+.theme-aesthetic .mood-lavanda { --mood: var(--a-lavanda); --mood-2: #bba8d6; }

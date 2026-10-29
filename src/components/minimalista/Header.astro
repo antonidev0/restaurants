@@ -1,0 +1,92 @@
+---
+import type { NavLink } from '@/types/restaurant';
+
+interface Props {
+  name: string;
+  nav: NavLink[];
+}
+
+const { name, nav } = Astro.props;
+---
+
+<header class="header">
+  <div class="m-wrap inner">
+    <a class="logo" href="#contenuto" aria-label={`${name}, torna all'inizio`}>{name}<span aria-hidden="true">.</span></a>
+    <nav aria-label="Navigazione principale">
+      <ul role="list" class="links">
+        {nav.map((link) => <li><a href={link.href}>{link.label}</a></li>)}
+      </ul>
+    </nav>
+    <a class="cta" href="#prenota">Prenota</a>
+  </div>
+</header>
+
+<style>
+  .header {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background: color-mix(in srgb, var(--m-bg) 88%, transparent);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--m-line);
+  }
+
+  .inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    height: 3.5rem;
+  }
+
+  .logo {
+    font-size: 1.125rem;
+    font-weight: 600;
+    letter-spacing: -0.03em;
+    text-decoration: none;
+  }
+
+  .logo span {
+    color: var(--m-accent);
+  }
+
+  /* Su mobile la navigazione resta nascosta: la pagina è breve e si legge scorrendo. */
+  .links {
+    display: none;
+  }
+
+  .links a,
+  .cta {
+    font-size: 0.875rem;
+    text-decoration: none;
+  }
+
+  .links a {
+    color: var(--m-muted);
+    transition: color 0.2s ease;
+  }
+
+  .links a:hover {
+    color: var(--m-ink);
+  }
+
+  .cta {
+    padding: 0.5rem 0.9rem;
+    border: 1px solid var(--m-ink);
+    border-radius: 999px;
+    transition: background 0.2s ease, color 0.2s ease;
+  }
+
+  .cta:hover {
+    background: var(--m-ink);
+    color: var(--m-bg);
+  }
+
+  @media (min-width: 48rem) {
+    .links {
+      display: flex;
+      gap: 2rem;
+    }
+  }
+</style>

@@ -1,0 +1,120 @@
+---
+import type { NavLink } from '@/types/restaurant';
+
+interface Props {
+  name: string;
+  nav: NavLink[];
+}
+
+const { name, nav } = Astro.props;
+---
+
+<header class="header">
+  <div class="a-wrap inner">
+    <a class="logo" href="#contenuto">{name}</a>
+    <nav aria-label="Navigazione principale">
+      <ul role="list" class="links">
+        {nav.map((link) => <li><a href={link.href}>{link.label}</a></li>)}
+      </ul>
+    </nav>
+    <a class="cta" href="#visita">Prenota</a>
+  </div>
+</header>
+
+<!-- Barra di prenotazione sempre a portata di pollice, solo su mobile. -->
+<a class="bar" href="#visita">
+  <span>Prenota un tavolo al sole</span>
+  <span class="bar-icon" aria-hidden="true">→</span>
+</a>
+
+<style>
+  .header {
+    position: relative;
+    z-index: 5;
+    padding-block: 1.25rem;
+  }
+
+  .inner {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 2rem;
+  }
+
+  .logo {
+    font-family: var(--a-display);
+    font-size: 1.35rem;
+    text-decoration: none;
+    letter-spacing: 0.02em;
+  }
+
+  .links,
+  .cta {
+    display: none;
+  }
+
+  .links a {
+    font-family: var(--a-serif);
+    font-size: 1.15rem;
+    font-style: italic;
+    text-decoration: none;
+  }
+
+  .links a:hover {
+    color: var(--a-terracotta);
+  }
+
+  .bar {
+    position: fixed;
+    left: 1rem;
+    right: 1rem;
+    bottom: calc(1rem + env(safe-area-inset-bottom));
+    z-index: 40;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.5rem 0.5rem 0.5rem 1.5rem;
+    min-height: 3.5rem;
+    border-radius: 999px;
+    background: var(--a-ink);
+    color: var(--a-cream);
+    text-decoration: none;
+    font-weight: 500;
+    box-shadow: 0 12px 30px -12px rgb(74 53 48 / 0.6);
+  }
+
+  .bar-icon {
+    display: grid;
+    place-items: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 50%;
+    background: var(--a-pesca);
+    color: var(--a-ink);
+  }
+
+  @media (min-width: 48rem) {
+    .inner {
+      justify-content: space-between;
+    }
+
+    .links {
+      display: flex;
+      gap: 2rem;
+    }
+
+    .cta {
+      display: inline-block;
+      padding: 0.6rem 1.4rem;
+      border-radius: 999px;
+      background: var(--a-ink);
+      color: var(--a-cream);
+      text-decoration: none;
+      font-size: 0.875rem;
+    }
+
+    .bar {
+      display: none;
+    }
+  }
+</style>

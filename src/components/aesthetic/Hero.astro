@@ -1,0 +1,181 @@
+---
+import Illustration from './Illustration.astro';
+
+interface Props {
+  name: string;
+  eyebrow: string;
+  tagline: string;
+}
+
+const { name, eyebrow, tagline } = Astro.props;
+const [first, ...rest] = name.split(' ');
+---
+
+<section class="hero" aria-labelledby="hero-title">
+  <div class="a-wrap grid">
+    <div class="copy">
+      <p class="a-eyebrow">{eyebrow}</p>
+      <h1 id="hero-title" class="a-title title">
+        {first} <em>{rest.join(' ')}</em>
+      </h1>
+      <p class="tagline">{tagline}</p>
+    </div>
+
+    <div class="visual">
+      <div class="arch" aria-hidden="true">
+        <span class="sun"></span>
+        <span class="sea"></span>
+        <Illustration mood="limone" class="lemon lemon--a" />
+        <Illustration mood="limone" class="lemon lemon--b" />
+      </div>
+
+      <svg class="badge" viewBox="0 0 100 100" aria-hidden="true">
+        <defs>
+          <path id="badge-circle" d="M50 50m-36 0a36 36 0 1 1 72 0a36 36 0 1 1-72 0" />
+        </defs>
+        <circle cx="50" cy="50" r="48" fill="#fffaf4" />
+        <text font-size="9.5" letter-spacing="2.6">
+          <textPath href="#badge-circle">LIMONI · SOLE · MARE · AMORE ·</textPath>
+        </text>
+        <text x="50" y="57" text-anchor="middle" font-size="22">✿</text>
+      </svg>
+    </div>
+  </div>
+</section>
+
+<style>
+  .hero {
+    padding-block: 1rem 4rem;
+    overflow: hidden;
+  }
+
+  .grid {
+    display: grid;
+    gap: 2.5rem;
+  }
+
+  .copy {
+    display: grid;
+    gap: 1rem;
+    text-align: center;
+    justify-items: center;
+  }
+
+  .title {
+    font-size: clamp(3.2rem, 15vw, 6.5rem);
+    line-height: 0.95;
+  }
+
+  .title em {
+    display: block;
+  }
+
+  .tagline {
+    max-width: 28ch;
+    font-family: var(--a-serif);
+    font-size: 1.35rem;
+    font-style: italic;
+    line-height: 1.35;
+    color: var(--a-muted);
+  }
+
+  .visual {
+    position: relative;
+    width: min(100%, 24rem);
+    margin-inline: auto;
+  }
+
+  .arch {
+    position: relative;
+    aspect-ratio: 3 / 4;
+    border-radius: var(--a-arch);
+    overflow: hidden;
+    background: linear-gradient(180deg, #f9d9c4 0%, #f7b9a0 45%, #f3a98c 62%, #cfdcc3 62.5%, #a9c29a 100%);
+    box-shadow: inset 0 0 0 10px var(--a-paper);
+  }
+
+  .sun {
+    position: absolute;
+    left: 50%;
+    top: 42%;
+    width: 46%;
+    aspect-ratio: 1;
+    border-radius: 50%;
+    background: radial-gradient(circle at 50% 40%, #fff3c9, #f6d35b 70%);
+    transform: translate(-50%, -50%);
+    animation: rise 6s ease-in-out infinite alternate;
+  }
+
+  /* Il mare: righe sottili sotto la linea dell'orizzonte. */
+  .sea {
+    position: absolute;
+    inset: 62% 0 0;
+    background: repeating-linear-gradient(180deg, transparent 0 14px, rgb(255 250 244 / 0.45) 14px 15px);
+  }
+
+  .visual :global(.lemon) {
+    position: absolute;
+    width: 38%;
+  }
+
+  .visual :global(.lemon--a) {
+    top: 6%;
+    left: -4%;
+    transform: rotate(-24deg);
+  }
+
+  .visual :global(.lemon--b) {
+    bottom: 4%;
+    right: -2%;
+    width: 30%;
+    transform: rotate(160deg);
+  }
+
+  .badge {
+    position: absolute;
+    right: -0.75rem;
+    top: 54%;
+    width: 6.5rem;
+    fill: var(--a-ink);
+    font-family: var(--a-sans);
+    font-weight: 500;
+    animation: spin 18s linear infinite;
+  }
+
+  @keyframes rise {
+    to {
+      transform: translate(-50%, -38%);
+    }
+  }
+
+  @keyframes spin {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
+  @media (min-width: 48rem) {
+    .hero {
+      padding-block: 3rem 6rem;
+    }
+
+    .grid {
+      grid-template-columns: 1.1fr 1fr;
+      align-items: center;
+    }
+
+    .copy {
+      text-align: left;
+      justify-items: start;
+    }
+
+    .title em {
+      display: inline;
+    }
+
+    .badge {
+      right: -2rem;
+      width: 8rem;
+    }
+  }
+</style>
